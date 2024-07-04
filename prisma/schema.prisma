@@ -6,6 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["relationJoins"]
 }
 
 datasource db {
@@ -20,15 +21,89 @@ model User {
   email        String   @unique
   password     String 
   photo        String
-  role_id      Int
-  role         Role     @relation(fields: [role_id], references: [id])
+  role         String   @default("user")
   phone_number String
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+  blogs        Blog[]
+  address      Address?
+
+  @@map("users")
 }
 
-model Role {
-  id           Int      @id @default(autoincrement())
-  role_name    String   @unique
-  users        User[]
+
+model Blog {
+  id               Int      @id @default(autoincrement())
+  blog_title       String
+  blog_description String
+  blog_author      String
+  blog_photo       String
+  blog_category    String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  user_id          Int
+  user             User @relation(fields: [user_id], references: [id])
+
+  @@map("blogs")
+}
+
+model Address {
+  id          Int     @id @default(autoincrement())
+  country     String
+  city        String
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  state       String?
+  zip_code    Int?
+  user_id     Int     @unique
+  users       User    @relation(fields: [user_id], references: [id])
+
+  @@map("addresses")
+}
+
+model Product {
+  id                  Int    @id @default(autoincrement())
+  product_title       String @unique
+  product_price       Int
+  product_photo       String
+  product_description String
+  product_status      Boolean  @default(false)
+  manufacturing       String
+  product_handle      String
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+  product_rating      Int?
+  product_before_off_price Int?
+  product_type        String?
+  in_stock            Boolean?
+  life                String?
+  category_id         Int
+  categories          Category @relation(fields: [category_id], references: [id])
+  product_reviews     ProductReview[]
+
+  @@map("products")
+}
+
+model Category {
+  id              Int @id @default(autoincrement())
+  category_name   String
+  category_handle String
+  category_images String
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  products        Product[]
+
+  @@map("categories")
+}
+
+model ProductReview {
+  id                  Int @id @default(autoincrement())
+  reviewer_name       String
+  reviewer_email      String
+  reviewer_photo      String
+  review_post_date    DateTime @default(now())
+  review_rating       Int 
+  review_description  String
+  product_id          Int
+  product             Product @relation(fields: [product_id], references: [id])
 }

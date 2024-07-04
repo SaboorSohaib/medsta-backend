@@ -2,7 +2,7 @@ import { ForbiddenException, Injectable } from "@nestjs/common"
 import { ConfigService } from "@nestjs/config"
 import { JwtService } from "@nestjs/jwt"
 import { PrismaService } from "src/prisma/prisma.service"
-import { AuthDto } from "./dto"
+import { AuthDto, SigninDto } from "./dto"
 import * as argon from "argon2"
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
 
@@ -17,12 +17,7 @@ export class AuthService {
   async Signup(dto: AuthDto) {
     try {
       const password = await argon.hash(dto.password)
-      const roleId = await this.prisma.role.findUnique({
-        where: { id: dto.role_id },
-      })
-      if (!roleId) {
-        throw new ForbiddenException("Role id does not exist")
-      }
+      const userCount = await this.prisma.user.count()
       const user = await this.prisma.user.create({
         data: {
           email: dto.email,
@@ -31,7 +26,7 @@ export class AuthService {
           last_name: dto.last_name,
           photo: dto.photo,
           phone_number: dto.phone_number,
-          role_id: dto.role_id,
+          role: userCount === 0 ? "admin" : "user",
         },
       })
       return this.SignInToken(user.id, user.email)
@@ -42,6 +37,25 @@ export class AuthService {
         }
       }
       return error
+    }
+  }
+
+  async Signin(dto: SigninDto) {
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: { email: dto.email },
+      })
+      if (!user) {
+        throw new ForbiddenException("Email is incorect")
+      }
+
+      const passwordComparison = await argon.verify(user.password, dto.password)
+      if (!passwordComparison) {
+        throw new ForbiddenException("Credentials is incorrect")
+      }
+      return this.SignInToken(user.id, user.email)
+    } catch (error) {
+      throw new Error()
     }
   }
 

@@ -1,8 +1,10 @@
 import { IsString, IsNotEmpty } from "class-validator"
 
-export class RoleDto {
+export class BlogDto {
   id
-  @IsString()
+
   @IsNotEmpty()
-  role_name
+  @IsString()
+  blog_title
+  blog_description
 }
