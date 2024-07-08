@@ -9,7 +9,7 @@ import {
   Put,
 } from "@nestjs/common"
 import { CategoryService } from "./category.service"
-import { CreateCategoryDto, UpdateDto } from "./categoryDto"
+import { CreateCategoryDto, UpdateCategoryDto } from "./categoryDto"
 import { Category } from "@prisma/client"
 
 @Controller("category")
@@ -56,7 +56,7 @@ export class CategoryController {
   @Put(":id")
   async updateCategory(
     @Param("id", ParseIntPipe) id: number,
-    @Body() updateDto: UpdateDto,
+    @Body() updateDto: UpdateCategoryDto,
   ) {
     try {
       const updateCategory = await this.categoryService.updateCategory(

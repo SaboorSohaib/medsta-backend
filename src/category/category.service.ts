@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common"
 import { PrismaService } from "src/prisma/prisma.service"
-import { CreateCategoryDto, UpdateDto } from "./categoryDto"
+import { CreateCategoryDto, UpdateCategoryDto } from "./categoryDto"
 import { Category } from "@prisma/client"
 
 @Injectable()
@@ -18,8 +18,8 @@ export class CategoryService {
       })
       return category
     } catch (error) {
-      if (error.code === "500") {
-        return "Error"
+      if (error) {
+        throw new Error()
       }
     }
   }
@@ -54,7 +54,7 @@ export class CategoryService {
 
   async updateCategory(
     id: number,
-    updateDto: UpdateDto,
+    updateDto: UpdateCategoryDto,
   ): Promise<Category | null> {
     try {
       const category = await this.prisma.category.update({

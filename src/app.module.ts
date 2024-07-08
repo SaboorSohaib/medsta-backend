@@ -7,6 +7,9 @@ import { BlogController } from "./blog/blog.controller"
 import { BlogService } from "./blog/blog.service"
 import { BlogModule } from "./blog/blog.module"
 import { CategoryModule } from "./category/category.module"
+import { ProductController } from "./product/product.controller"
+import { ProductModule } from "./product/product.module"
+import { ProductService } from "./product/product.service"
 
 @Module({
   imports: [
@@ -16,8 +19,9 @@ import { CategoryModule } from "./category/category.module"
     UserModule,
     BlogModule,
     CategoryModule,
+    ProductModule,
   ],
-  controllers: [BlogController],
-  providers: [BlogService],
+  controllers: [BlogController, ProductController],
+  providers: [BlogService, ProductService],
 })
 export class AppModule {}
