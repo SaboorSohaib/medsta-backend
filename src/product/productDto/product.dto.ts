@@ -3,41 +3,41 @@ import { IsNotEmpty, IsString, IsNumber, IsBoolean } from "class-validator"
 export class CreateProductDto {
   @IsString()
   @IsNotEmpty()
-  product_title
+  product_title: string
 
   @IsNumber()
   @IsNotEmpty()
-  product_price
+  product_price: number
 
   @IsString()
   @IsNotEmpty()
-  product_photo
+  product_photo: string
 
   @IsString()
   @IsNotEmpty()
-  product_type
+  product_type: string
 
   @IsString()
   @IsNotEmpty()
-  product_description
+  product_description: string
 
   @IsString()
   @IsNotEmpty()
-  manufacturing
+  manufacturing: string
 
   @IsString()
   @IsNotEmpty()
-  product_handle
+  product_handle: string
 
   @IsNotEmpty()
   @IsNumber()
-  category_id
+  category_id: number
 
   @IsBoolean()
   product_status
 
   @IsString()
-  life
+  life: string
 
   in_stock
   product_before_off_price
@@ -47,39 +47,39 @@ export class CreateProductDto {
 export class UpdateProductDto {
   @IsString()
   @IsNotEmpty()
-  product_title
+  product_title: string
 
   @IsNumber()
   @IsNotEmpty()
-  product_price
+  product_price: number
 
   @IsString()
   @IsNotEmpty()
-  product_photo
+  product_photo: string
 
   @IsString()
   @IsNotEmpty()
-  product_type
+  product_type: string
 
   @IsString()
   @IsNotEmpty()
-  product_description
+  product_description: string
 
   @IsString()
   @IsNotEmpty()
-  manufacturing
+  manufacturing: string
 
   @IsString()
   @IsNotEmpty()
-  product_handle
+  product_handle: string
 
   @IsNotEmpty()
   @IsNumber()
-  category_id
+  category_id: number
 
   @IsBoolean()
   product_status
 
   @IsString()
-  life
+  life: string
 }

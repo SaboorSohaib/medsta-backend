@@ -24,7 +24,6 @@ export class ProductReviewService {
           reviewer_name: createDto.reviewer_name,
           reviewer_email: createDto.reviewer_email,
           reviewer_photo: createDto.reviewer_photo,
-          review_post_date: createDto.review_post_date,
           review_description: createDto.review_description,
           review_rating: createDto.review_rating,
           product_id: createDto.product_id,
@@ -33,7 +32,6 @@ export class ProductReviewService {
 
       return productReview
     } catch (error) {
-      console.error(error, "......................")
       if (error) {
         return response
       }

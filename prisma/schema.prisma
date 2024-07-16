@@ -42,7 +42,9 @@ model Blog {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
   user_id          Int
+  category_id      Int
   user             User @relation(fields: [user_id], references: [id])
+  category         Category @relation(fields: [category_id], references: [id])
 
   @@map("blogs")
 }
@@ -92,6 +94,7 @@ model Category {
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
   products        Product[]
+  blogs           Blog[]
 
   @@map("categories")
 }
@@ -101,9 +104,9 @@ model ProductReview {
   reviewer_name       String
   reviewer_email      String
   reviewer_photo      String
-  review_post_date    DateTime @default(now())
   review_rating       Int 
   review_description  String
   product_id          Int
+  createdAt           DateTime @default(now())
   product             Product @relation(fields: [product_id], references: [id])
 }
