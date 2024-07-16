@@ -10,8 +10,11 @@ import { CategoryModule } from "./category/category.module"
 import { ProductController } from "./product/product.controller"
 import { ProductModule } from "./product/product.module"
 import { ProductService } from "./product/product.service"
-import { ProductReviewService } from './product-review/product-review.service';
-import { ProductReviewModule } from './product-review/product-review.module';
+import { ProductReviewService } from "./product-review/product-review.service"
+import { ProductReviewModule } from "./product-review/product-review.module"
+import { AddressController } from "./address/address.controller"
+import { AddressModule } from "./address/address.module"
+import { AddressService } from "./address/address.service"
 
 @Module({
   imports: [
@@ -23,8 +26,14 @@ import { ProductReviewModule } from './product-review/product-review.module';
     CategoryModule,
     ProductModule,
     ProductReviewModule,
+    AddressModule,
   ],
-  controllers: [BlogController, ProductController],
-  providers: [BlogService, ProductService, ProductReviewService],
+  controllers: [BlogController, ProductController, AddressController],
+  providers: [
+    AddressService,
+    BlogService,
+    ProductService,
+    ProductReviewService,
+  ],
 })
 export class AppModule {}
