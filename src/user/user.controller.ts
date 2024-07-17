@@ -14,6 +14,7 @@ import { JwtGurad } from "src/auth/guard"
 import { PrismaService } from "src/prisma/prisma.service"
 import { UserService } from "./user.service"
 import { UpdateDto } from "src/auth/dto"
+import { AuthenticatedGuard } from "src/auth/guard/authenticated.guard"
 
 @Controller("user")
 export class UserController {
@@ -28,6 +29,7 @@ export class UserController {
     return user
   }
 
+  @UseGuards(AuthenticatedGuard)
   @Get("all-users")
   async getAllUsers(): Promise<User[] | null> {
     try {

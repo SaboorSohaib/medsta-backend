@@ -34,6 +34,20 @@ export class UserService {
     }
   }
 
+  async getSingleUserByEmail(email: string): Promise<User | null> {
+    try {
+      const user = await this.prisma.user.findFirst({
+        where: { email: email },
+      })
+      if (!user) {
+        throw new Error("User not Found")
+      }
+      return user
+    } catch (error) {
+      throw new Error("Failed to fetch data")
+    }
+  }
+
   async updateSingleUser(
     id: number,
     updateData: UpdateDto,

@@ -1,10 +1,18 @@
-import { ForbiddenException, Injectable } from "@nestjs/common"
+import {
+  ForbiddenException,
+  Injectable,
+  NotAcceptableException,
+  UseGuards,
+} from "@nestjs/common"
 import { ConfigService } from "@nestjs/config"
 import { JwtService } from "@nestjs/jwt"
 import { PrismaService } from "src/prisma/prisma.service"
 import { AuthDto, SigninDto } from "./dto"
 import * as argon from "argon2"
+import * as bcrypt from "bcrypt"
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
+import { UserService } from "src/user/user.service"
+import { LocalAuthGuard } from "./guard/local.auth.guard"
 
 @Injectable()
 export class AuthService {
@@ -12,6 +20,7 @@ export class AuthService {
     private prisma: PrismaService,
     private jwt: JwtService,
     private config: ConfigService,
+    private readonly usersService: UserService,
   ) {}
 
   async Signup(dto: AuthDto) {
@@ -40,6 +49,7 @@ export class AuthService {
     }
   }
 
+  @UseGuards(LocalAuthGuard)
   async Signin(dto: SigninDto) {
     try {
       const user = await this.prisma.user.findUnique({
@@ -76,5 +86,20 @@ export class AuthService {
     return {
       access_token: token,
     }
+  }
+
+  async validateUser(email: string, password: string): Promise<any> {
+    const user = await this.usersService.getSingleUserByEmail(email)
+    const passwordValid = await bcrypt.compare(password, user.password)
+    if (!user) {
+      throw new NotAcceptableException("could not find the user")
+    }
+    if (user && passwordValid) {
+      return {
+        userId: user.id,
+        userName: user.email,
+      }
+    }
+    return null
   }
 }
