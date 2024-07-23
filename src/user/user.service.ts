@@ -1,5 +1,9 @@
-import { Injectable, NotFoundException } from "@nestjs/common"
-import { Prisma, User } from "@prisma/client"
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common"
+import { User } from "@prisma/client"
 import { UpdateDto } from "src/auth/dto"
 import { PrismaService } from "src/prisma/prisma.service"
 
@@ -30,7 +34,7 @@ export class UserService {
       }
       return user
     } catch (error) {
-      throw new Error("Failed to fetch data")
+      throw new ForbiddenException(error.message)
     }
   }
 
@@ -47,7 +51,7 @@ export class UserService {
       })
       return user
     } catch (error) {
-      throw new Error("User Not Found")
+      throw new NotFoundException(error.message)
     }
   }
 }

@@ -1,63 +1,71 @@
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsString,
-  // IsStrongPassword,
-} from "class-validator"
+import { IsEmail, IsNotEmpty, IsString } from "class-validator"
 
 export class AuthDto {
   @IsString()
   @IsNotEmpty()
-  first_name
-  last_name
-  photo
-  role
+  first_name: string
+
+  @IsString()
+  @IsNotEmpty()
+  last_name: string
+
+  @IsString()
+  @IsNotEmpty()
+  photo: string
+
+  @IsString()
+  @IsNotEmpty()
+  role: string
 
   @IsEmail()
   @IsString()
   @IsNotEmpty()
-  email
+  email: string
 
-  // @IsStrongPassword()
   @IsNotEmpty()
-  password
+  password: string
 
   @IsString()
   @IsNotEmpty()
-  phone_number
-
-  // @IsNotEmpty()
-  // role_id
+  phone_number: string
 }
 
 export class SigninDto {
   @IsEmail()
   @IsString()
   @IsNotEmpty()
-  email
+  email: string
 
   @IsNotEmpty()
-  password
+  password: string
 }
 
 export class UpdateDto {
   @IsString()
   @IsNotEmpty()
-  first_name
-  last_name
-  photo
-  role
+  first_name: string
+
+  @IsString()
+  @IsNotEmpty()
+  last_name: string
+
+  @IsString()
+  @IsNotEmpty()
+  photo: string
+
+  @IsString()
+  @IsNotEmpty()
+  role: string
 
   @IsEmail()
   @IsString()
   @IsNotEmpty()
-  email
+  email: string
 
-  // @IsStrongPassword()
   @IsNotEmpty()
-  password
+  password: string
 
   @IsString()
   @IsNotEmpty()
-  phone_number
+  phone_number: string
 }

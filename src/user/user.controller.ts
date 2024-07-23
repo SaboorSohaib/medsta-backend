@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  ForbiddenException,
   Get,
   NotFoundException,
   Param,
@@ -10,24 +11,23 @@ import {
 } from "@nestjs/common"
 import { User } from "@prisma/client"
 import { GetUser } from "src/auth/decorator"
-import { JwtGurad } from "src/auth/guard"
-import { PrismaService } from "src/prisma/prisma.service"
+import { JwtGuard } from "src/auth/guard"
 import { UserService } from "./user.service"
 import { UpdateDto } from "src/auth/dto"
+import { IsAdminGuard } from "src/auth/guard/is-admin.guard"
 
 @Controller("user")
 export class UserController {
-  constructor(
-    private prisma: PrismaService,
-    private userService: UserService,
-  ) {}
+  constructor(private userService: UserService) {}
 
-  @UseGuards(JwtGurad)
+  @UseGuards(JwtGuard)
   @Get("me")
   getme(@GetUser() user: User) {
     return user
   }
 
+  @UseGuards(IsAdminGuard)
+  @UseGuards(JwtGuard)
   @Get("all-users")
   async getAllUsers(): Promise<User[] | null> {
     try {
@@ -38,7 +38,7 @@ export class UserController {
       return users.data
     } catch (error) {
       if (error) {
-        throw new NotFoundException("Users Not Found")
+        throw new NotFoundException(error.message)
       }
       return []
     }
@@ -55,7 +55,9 @@ export class UserController {
       }
       return user
     } catch (error) {
-      throw new Error()
+      if (error) {
+        throw new ForbiddenException(error.message)
+      }
     }
   }
 
@@ -72,7 +74,7 @@ export class UserController {
       return user
     } catch (error) {
       if (error) {
-        throw new Error("User data is not updated")
+        throw new ForbiddenException(error.message)
       }
     }
   }
