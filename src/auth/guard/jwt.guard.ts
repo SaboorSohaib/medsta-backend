@@ -1,4 +1,4 @@
-import { ExecutionContext } from "@nestjs/common"
+import { ExecutionContext, UnauthorizedException } from "@nestjs/common"
 import { AuthGuard } from "@nestjs/passport"
 import { Observable } from "rxjs"
 
@@ -12,7 +12,9 @@ export class JwtGuard extends AuthGuard("jwt") {
     const request = context.switchToHttp().getRequest()
     const cookieName = "token"
     if (!request.cookies || !request.cookies[cookieName]) {
-      return false
+      throw new UnauthorizedException(
+        "You do not have the necessary permissions",
+      )
     }
     return super.canActivate(context)
   }

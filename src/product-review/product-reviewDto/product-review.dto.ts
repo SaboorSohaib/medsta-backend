@@ -12,46 +12,15 @@ import {
 export class CreateProductReviewDto {
   @IsNotEmpty()
   @IsString()
-  reviewer_name
+  reviewer_name: string
 
   @IsNotEmpty()
   @IsString()
-  reviewer_email
+  reviewer_email: string
 
   @IsNotEmpty()
   @IsString()
-  reviewer_photo
-
-  @Transform(({ value }) => new Date(value))
-  @IsNotEmpty()
-  @IsDate()
-  review_post_date: Date
-
-  @IsNotEmpty()
-  @IsNumber()
-  review_rating
-
-  @IsNotEmpty()
-  @IsString()
-  review_description
-
-  @IsNotEmpty()
-  @IsNumber()
-  product_id
-}
-
-export class UpdateProductReviewDto {
-  @IsNotEmpty()
-  @IsString()
-  reviewer_name
-
-  @IsNotEmpty()
-  @IsString()
-  reviewer_email
-
-  @IsNotEmpty()
-  @IsString()
-  reviewer_photo
+  reviewer_photo: string
 
   @Transform(({ value }) => new Date(value))
   @IsNotEmpty()
@@ -62,13 +31,46 @@ export class UpdateProductReviewDto {
   @IsInt()
   @Min(1)
   @Max(5)
-  review_rating
+  review_rating: number
 
   @IsNotEmpty()
   @IsString()
-  review_description
+  review_description: string
+
+  @IsNotEmpty()
+  @IsNumber()
+  product_id: number
+}
+
+export class UpdateProductReviewDto {
+  @IsNotEmpty()
+  @IsString()
+  reviewer_name: string
+
+  @IsNotEmpty()
+  @IsString()
+  reviewer_email: string
+
+  @IsNotEmpty()
+  @IsString()
+  reviewer_photo: string
+
+  @Transform(({ value }) => new Date(value))
+  @IsNotEmpty()
+  @IsDate()
+  review_post_date: Date
 
   @IsNotEmpty()
   @IsInt()
-  product_id
+  @Min(1)
+  @Max(5)
+  review_rating: number
+
+  @IsNotEmpty()
+  @IsString()
+  review_description: string
+
+  @IsNotEmpty()
+  @IsInt()
+  product_id: number
 }

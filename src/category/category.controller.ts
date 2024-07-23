@@ -7,20 +7,27 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  UseGuards,
 } from "@nestjs/common"
 import { CategoryService } from "./category.service"
 import { CreateCategoryDto, UpdateCategoryDto } from "./categoryDto"
 import { Category } from "@prisma/client"
+import { IsAdminGuard } from "src/auth/guard/is-admin.guard"
+import { JwtGuard } from "src/auth/guard"
 
 @Controller("category")
 export class CategoryController {
   constructor(private categoryService: CategoryService) {}
 
+  @UseGuards(IsAdminGuard)
+  @UseGuards(JwtGuard)
   @Post("create-category")
   createCategory(@Body() createCategoryDto: CreateCategoryDto): Promise<any> {
     return this.categoryService.createCategory(createCategoryDto)
   }
 
+  @UseGuards(IsAdminGuard)
+  @UseGuards(JwtGuard)
   @Get("get-all-categories")
   async getAllCategories(): Promise<Category[] | null> {
     try {
@@ -36,6 +43,8 @@ export class CategoryController {
     }
   }
 
+  @UseGuards(IsAdminGuard)
+  @UseGuards(JwtGuard)
   @Get(":id")
   async getSingleCategory(
     @Param("id", ParseIntPipe) id: number,
@@ -53,6 +62,8 @@ export class CategoryController {
     }
   }
 
+  @UseGuards(IsAdminGuard)
+  @UseGuards(JwtGuard)
   @Put(":id")
   async updateCategory(
     @Param("id", ParseIntPipe) id: number,

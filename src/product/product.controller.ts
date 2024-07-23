@@ -7,15 +7,20 @@ import {
   ParseIntPipe,
   Param,
   Put,
+  UseGuards,
 } from "@nestjs/common"
 import { CreateProductDto, UpdateProductDto } from "./productDto"
 import { ProductService } from "./product.service"
 import { Product } from "@prisma/client"
+import { IsAdminGuard } from "src/auth/guard/is-admin.guard"
+import { JwtGuard } from "src/auth/guard"
 
 @Controller("product")
 export class ProductController {
   constructor(private productService: ProductService) {}
 
+  @UseGuards(IsAdminGuard)
+  @UseGuards(JwtGuard)
   @Post("create-product")
   createProduct(@Body() createDto: CreateProductDto): Promise<any> {
     return this.productService.createProduct(createDto)
@@ -55,6 +60,8 @@ export class ProductController {
     }
   }
 
+  @UseGuards(IsAdminGuard)
+  @UseGuards(JwtGuard)
   @Put(":id")
   async updateProduct(
     @Param("id", ParseIntPipe) id: number,

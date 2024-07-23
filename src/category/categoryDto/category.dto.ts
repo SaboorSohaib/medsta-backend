@@ -3,27 +3,27 @@ import { IsNotEmpty, IsString } from "class-validator"
 export class CreateCategoryDto {
   @IsNotEmpty()
   @IsString()
-  category_name
+  category_name: string
 
   @IsNotEmpty()
   @IsString()
-  category_handle
+  category_handle: string
 
   @IsNotEmpty()
   @IsString()
-  category_images
+  category_images: string
 }
 
 export class UpdateCategoryDto {
   @IsNotEmpty()
   @IsString()
-  category_name
+  category_name: string
 
   @IsNotEmpty()
   @IsString()
-  category_handle
+  category_handle: string
 
   @IsNotEmpty()
   @IsString()
-  category_images
+  category_images: string
 }

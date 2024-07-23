@@ -6,6 +6,7 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from "@nestjs/common"
@@ -15,6 +16,8 @@ import {
   UpdateProductReviewDto,
 } from "./product-reviewDto"
 import { ProductReview } from "@prisma/client"
+import { IsAdminGuard } from "src/auth/guard/is-admin.guard"
+import { JwtGuard } from "src/auth/guard"
 
 @Controller("product-review")
 export class ProductReviewController {
@@ -63,6 +66,8 @@ export class ProductReviewController {
     }
   }
 
+  @UseGuards(IsAdminGuard)
+  @UseGuards(JwtGuard)
   @Put(":id")
   async updateProductReview(
     @Param("id", ParseIntPipe) id: number,
