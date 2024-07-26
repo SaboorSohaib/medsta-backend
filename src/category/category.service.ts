@@ -1,4 +1,8 @@
-import { Injectable } from "@nestjs/common"
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common"
 import { PrismaService } from "src/prisma/prisma.service"
 import { CreateCategoryDto, UpdateCategoryDto } from "./categoryDto"
 import { Category } from "@prisma/client"
@@ -16,10 +20,12 @@ export class CategoryService {
           category_images: categoryDto.category_images,
         },
       })
-      return category
+      return { success: true, data: category }
     } catch (error) {
       if (error) {
-        throw new Error()
+        if (error) {
+          throw new ForbiddenException(error.message)
+        }
       }
     }
   }
@@ -27,16 +33,18 @@ export class CategoryService {
   async getAllCategories() {
     try {
       const categories = await this.prisma.category.findMany()
-      if (!categories) {
-        return null
+      if (categories.length === 0) {
+        return { success: false, data: [] }
       }
-      return categories
+      return { success: true, data: categories }
     } catch (error) {
-      throw new Error()
+      if (error) {
+        throw new NotFoundException(error.message)
+      }
     }
   }
 
-  async getSingleCategory(id: number): Promise<Category | null> {
+  async getSingleCategory(id: number) {
     try {
       const category = await this.prisma.category.findUnique({
         where: {
@@ -44,26 +52,27 @@ export class CategoryService {
         },
       })
       if (!category) {
-        throw new Error("Category not found")
+        return { success: false, data: [] }
       }
-      return category
+      return { success: true, data: category }
     } catch (error) {
-      throw new Error()
+      if (error) {
+        throw new NotFoundException(error.message)
+      }
     }
   }
 
-  async updateCategory(
-    id: number,
-    updateDto: UpdateCategoryDto,
-  ): Promise<Category | null> {
+  async updateCategory(id: number, updateDto: UpdateCategoryDto) {
     try {
       const category = await this.prisma.category.update({
         data: updateDto,
         where: { id },
       })
-      return category
+      return { success: true, data: category }
     } catch (error) {
-      throw new Error("User is not updated")
+      if (error) {
+        throw new NotFoundException(error.message)
+      }
     }
   }
 }

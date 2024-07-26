@@ -29,36 +29,13 @@ export class UserController {
   @UseGuards(IsAdminGuard)
   @UseGuards(JwtGuard)
   @Get("all-users")
-  async getAllUsers(): Promise<User[] | null> {
-    try {
-      const users = await this.userService.getAllUsers()
-      if (!users || users.data.length === 0) {
-        throw new NotFoundException("Users Not found")
-      }
-      return users.data
-    } catch (error) {
-      if (error) {
-        throw new NotFoundException(error.message)
-      }
-      return []
-    }
+  async getAllUsers() {
+    return this.userService.getAllUsers()
   }
 
   @Get(":id")
-  async getSingleUser(
-    @Param("id", ParseIntPipe) id: number,
-  ): Promise<User | null> {
-    try {
-      const user = await this.userService.getSingleUser(id)
-      if (!user) {
-        throw new NotFoundException("User Not Found")
-      }
-      return user
-    } catch (error) {
-      if (error) {
-        throw new ForbiddenException(error.message)
-      }
-    }
+  async getSingleUser(@Param("id", ParseIntPipe) id: number) {
+    return this.userService.getSingleUser(id)
   }
 
   @Put(":id")

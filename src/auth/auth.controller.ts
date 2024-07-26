@@ -1,7 +1,7 @@
 import {
   Body,
   Controller,
-  Get,
+  Delete,
   HttpCode,
   HttpStatus,
   Post,
@@ -32,7 +32,7 @@ export class AuthController {
     return this.authService.Signin(dto)
   }
 
-  @Get("signout")
+  @Delete("signout")
   async signout(@Res({ passthrough: true }) res) {
     res.cookie("token", "", { expires: new Date() })
     return {}

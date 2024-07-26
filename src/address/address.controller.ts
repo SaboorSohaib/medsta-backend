@@ -7,10 +7,13 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  UseGuards,
 } from "@nestjs/common"
 import { AddressService } from "./address.service"
 import { UpdateAddressDto, createAddressDto } from "./addressDto"
 import { Address } from "@prisma/client"
+import { JwtGuard } from "src/auth/guard"
+import { IsAdminGuard } from "src/auth/guard/is-admin.guard"
 
 @Controller("address")
 export class AddressController {
@@ -21,15 +24,15 @@ export class AddressController {
     return this.addressService.createAddress(createBlog)
   }
 
+  @UseGuards(IsAdminGuard)
+  @UseGuards(JwtGuard)
   @Get("all-addreses")
   getAllAddreses() {
     return this.addressService.getAllAddreses()
   }
 
   @Get(":id")
-  getSingleAddress(
-    @Param("id", ParseIntPipe) id: number,
-  ): Promise<Address | null> {
+  getSingleAddress(@Param("id", ParseIntPipe) id: number) {
     return this.addressService.getSingleAddress(id)
   }
 
@@ -37,17 +40,13 @@ export class AddressController {
   async updateSingleAddress(
     @Param("id", ParseIntPipe) id: number,
     @Body() updateDto: UpdateAddressDto,
-  ): Promise<Address | null> {
+  ) {
     try {
       const updateAddress = await this.addressService.updateAddress(
         +id,
         updateDto,
       )
-      if (updateAddress) {
-        return updateAddress
-      } else {
-        return null
-      }
+      return updateAddress
     } catch (error) {
       throw new ForbiddenException(error.message)
     }

@@ -1,11 +1,13 @@
-import { Injectable, NotFoundException } from "@nestjs/common"
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common"
 import { PrismaService } from "src/prisma/prisma.service"
 import {
   CreateProductReviewDto,
   UpdateProductReviewDto,
 } from "./product-reviewDto"
-import { ProductReview } from "@prisma/client"
-import { response } from "express"
 
 @Injectable()
 export class ProductReviewService {
@@ -30,30 +32,30 @@ export class ProductReviewService {
         },
       })
 
-      return productReview
+      return { success: true, data: productReview }
     } catch (error) {
       if (error) {
-        return response
+        throw new ForbiddenException(error.message)
       }
     }
   }
 
-  async getAllProductReview(): Promise<ProductReview[] | null> {
+  async getAllProductReview() {
     try {
       const allProductsReview = await this.prisma.productReview.findMany()
       if (allProductsReview) {
-        return allProductsReview
+        return { success: true, data: allProductsReview }
       } else {
-        return null
+        return { success: false, data: [] }
       }
     } catch (error) {
       if (error) {
-        throw new Error()
+        throw new NotFoundException(error.message)
       }
     }
   }
 
-  async getSingleProductReview(id: number): Promise<ProductReview | null> {
+  async getSingleProductReview(id: number) {
     try {
       const productReview = await this.prisma.productReview.findUnique({
         where: {
@@ -61,34 +63,31 @@ export class ProductReviewService {
         },
       })
       if (productReview) {
-        return productReview
+        return { success: true, data: productReview }
       } else {
-        return null
+        return { success: false, data: [] }
       }
     } catch (error) {
       if (error) {
-        throw new Error()
+        throw new NotFoundException(error.message)
       }
     }
   }
 
-  async updateProductRevoew(
-    id: number,
-    updateDto: UpdateProductReviewDto,
-  ): Promise<ProductReview | null> {
+  async updateProductRevoew(id: number, updateDto: UpdateProductReviewDto) {
     try {
       const updateProductReview = await this.prisma.productReview.update({
         where: { id },
         data: updateDto,
       })
       if (updateProductReview) {
-        return updateProductReview
+        return { success: true, data: updateProductReview }
       } else {
-        return null
+        return { success: false, data: [] }
       }
     } catch (error) {
       if (error) {
-        throw new Error()
+        throw new NotFoundException(error.message)
       }
     }
   }

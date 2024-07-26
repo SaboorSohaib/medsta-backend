@@ -27,37 +27,13 @@ export class ProductController {
   }
 
   @Get("get-all-products")
-  async getAllProducts(): Promise<Product[] | null> {
-    try {
-      const allProducts = this.productService.getAllProducts()
-      if (allProducts) {
-        return allProducts
-      } else {
-        return null
-      }
-    } catch (error) {
-      if (error) {
-        throw new NotFoundException("Products are not found")
-      }
-    }
+  async getAllProducts() {
+    return this.productService.getAllProducts()
   }
 
   @Get(":id")
-  async getSingleProduct(
-    @Param("id", ParseIntPipe) id: number,
-  ): Promise<Product | null> {
-    try {
-      const product = await this.productService.getSingleProduct(id)
-      if (product) {
-        return product
-      } else {
-        return null
-      }
-    } catch (error) {
-      if (error) {
-        throw new NotFoundException("Product is not found")
-      }
-    }
+  async getSingleProduct(@Param("id", ParseIntPipe) id: number) {
+    return this.productService.getSingleProduct(id)
   }
 
   @UseGuards(IsAdminGuard)
@@ -73,13 +49,13 @@ export class ProductController {
         UpdateProductDto,
       )
       if (updateSignleProduct) {
-        return updateSignleProduct
+        return { success: true, data: updateSignleProduct }
       } else {
-        return null
+        return { success: false, data: {} }
       }
     } catch (error) {
       if (error) {
-        throw new NotFoundException("Product is not updated")
+        throw new NotFoundException(error.message)
       }
     }
   }

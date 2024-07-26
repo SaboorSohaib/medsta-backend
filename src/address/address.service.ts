@@ -27,21 +27,22 @@ export class AddressService {
           user_id: createDto.user_id,
         },
       })
-      return address
+      return { success: true, data: address }
     } catch (error) {
       if (error) {
+        console.log("🚀 ~ AddressService ~ createAddress ~ error:", error)
         throw new ForbiddenException(error.message)
       }
     }
   }
 
-  async getAllAddreses(): Promise<Address[] | null> {
+  async getAllAddreses() {
     try {
       const allAddreses = await this.prisma.address.findMany()
       if (allAddreses) {
-        return allAddreses
+        return { success: true, data: allAddreses }
       } else {
-        return null
+        return { success: false, data: [] }
       }
     } catch (error) {
       if (error) {
@@ -50,15 +51,15 @@ export class AddressService {
     }
   }
 
-  async getSingleAddress(id: number): Promise<Address | null> {
+  async getSingleAddress(id: number) {
     try {
       const address = await this.prisma.address.findUnique({
         where: { id: id },
       })
       if (address) {
-        return address
+        return { success: true, data: address }
       } else {
-        return null
+        return { success: false, data: {} }
       }
     } catch (error) {
       if (error) {
@@ -67,10 +68,7 @@ export class AddressService {
     }
   }
 
-  async updateAddress(
-    id: number,
-    updateDto: UpdateAddressDto,
-  ): Promise<Address | null> {
+  async updateAddress(id: number, updateDto: UpdateAddressDto) {
     try {
       const { user_id, country, city, zip_code, state } = updateDto
       const user = await this.prisma.user.findUnique({ where: { id: user_id } })
@@ -88,7 +86,7 @@ export class AddressService {
         where: { id },
       })
 
-      return address
+      return { success: true, data: address }
     } catch (error) {
       if (error) {
         throw new ForbiddenException(error.message)

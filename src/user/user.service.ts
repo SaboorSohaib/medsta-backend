@@ -24,24 +24,24 @@ export class UserService {
     }
   }
 
-  async getSingleUser(id: number): Promise<User | null> {
+  async getSingleUser(id: number) {
     try {
       const user = await this.prisma.user.findUnique({
         where: { id: id },
       })
-      if (!user) {
-        throw new Error("User not Found")
+      if (user) {
+        return { success: true, data: user }
+      } else {
+        return { success: false, data: [] }
       }
-      return user
     } catch (error) {
-      throw new ForbiddenException(error.message)
+      if (error) {
+        throw new ForbiddenException(error.message)
+      }
     }
   }
 
-  async updateSingleUser(
-    id: number,
-    updateData: UpdateDto,
-  ): Promise<User | null> {
+  async updateSingleUser(id: number, updateData: UpdateDto) {
     try {
       const user = await this.prisma.user.update({
         data: updateData,
@@ -49,9 +49,11 @@ export class UserService {
           id,
         },
       })
-      return user
+      return { suucess: true, data: user }
     } catch (error) {
-      throw new NotFoundException(error.message)
+      if (error) {
+        throw new NotFoundException(error.message)
+      }
     }
   }
 }
