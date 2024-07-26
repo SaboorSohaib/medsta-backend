@@ -28,7 +28,7 @@ export class BlogController {
   }
 
   @Get(":id")
-  getSingleBlog(@Param("id", ParseIntPipe) id: number): Promise<Blog | null> {
+  getSingleBlog(@Param("id", ParseIntPipe) id: number) {
     return this.blogService.getSingleBlog(id)
   }
 
@@ -36,17 +36,13 @@ export class BlogController {
   async updateSingleBlog(
     @Param("id", ParseIntPipe) id: number,
     @Body() updateDto: UpdateBlogDto,
-  ): Promise<Blog | null> {
+  ) {
     try {
       const updatedBlog = await this.blogService.updateSingleBlog(
         +id,
         updateDto,
       )
-      if (updatedBlog) {
-        return updatedBlog
-      } else {
-        return null
-      }
+      return updatedBlog
     } catch (error) {
       throw new ForbiddenException(error.message)
     }

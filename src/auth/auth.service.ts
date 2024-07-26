@@ -5,12 +5,15 @@ import { PrismaService } from "src/prisma/prisma.service"
 import { AuthDto, SigninDto } from "./dto"
 import * as argon from "argon2"
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
+import { UserService } from "src/user/user.service"
+import { User } from "@prisma/client"
 
 @Injectable()
 export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwt: JwtService,
+    private userService: UserService,
     private config: ConfigService,
   ) {}
 
@@ -55,8 +58,18 @@ export class AuthService {
       }
       return this.SignInToken(user.id, user.email)
     } catch (error) {
-      throw new Error()
+      if (error) {
+        throw new ForbiddenException(error.message)
+      }
     }
+  }
+
+  async validateUser(payload: any): Promise<any> {
+    const user = await this.userService.getSingleUser(payload.sub)
+    if (user) {
+      return user
+    }
+    return null
   }
 
   async SignInToken(

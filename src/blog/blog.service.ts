@@ -50,7 +50,7 @@ export class BlogService {
           category_id,
         },
       })
-      return blog
+      return { success: true, data: blog }
     } catch (error) {
       if (error) {
         throw new ForbiddenException(error.message)
@@ -62,9 +62,9 @@ export class BlogService {
     try {
       const blogs = await this.prisma.blog.findMany()
       if (blogs) {
-        return blogs
+        return { success: true, data: blogs }
       } else {
-        return null
+        return { success: false, data: [] }
       }
     } catch (error) {
       if (error) {
@@ -73,15 +73,15 @@ export class BlogService {
     }
   }
 
-  async getSingleBlog(id: number): Promise<Blog | null> {
+  async getSingleBlog(id: number) {
     try {
       const blog = await this.prisma.blog.findUnique({
         where: { id: id },
       })
       if (blog) {
-        return blog
+        return { success: true, data: blog }
       } else {
-        throw new NotFoundException(`Blog with id ${id} not found`)
+        return { success: false, data: [] }
       }
     } catch (error) {
       if (error) {
@@ -90,10 +90,7 @@ export class BlogService {
     }
   }
 
-  async updateSingleBlog(
-    id: number,
-    updateDto: UpdateBlogDto,
-  ): Promise<Blog | null> {
+  async updateSingleBlog(id: number, updateDto: UpdateBlogDto) {
     try {
       const {
         user_id,
@@ -133,11 +130,7 @@ export class BlogService {
         },
       })
 
-      if (blog) {
-        return blog
-      } else {
-        throw new NotFoundException(`Blog with ID ${id} not found`)
-      }
+      return { success: true, data: blog }
     } catch (error) {
       if (error) {
         throw new ForbiddenException(error.message)

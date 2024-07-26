@@ -2,10 +2,12 @@ import {
   Body,
   Controller,
   Get,
+  NotFoundException,
   Param,
   ParseIntPipe,
   Post,
   Put,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from "@nestjs/common"
@@ -14,7 +16,8 @@ import {
   CreateProductReviewDto,
   UpdateProductReviewDto,
 } from "./product-reviewDto"
-import { ProductReview } from "@prisma/client"
+import { IsAdminGuard } from "src/auth/guard/is-admin.guard"
+import { JwtGuard } from "src/auth/guard"
 
 @Controller("product-review")
 export class ProductReviewController {
@@ -29,45 +32,22 @@ export class ProductReviewController {
   }
 
   @Get("all-products-review")
-  async getAllProductsReview(): Promise<ProductReview[] | null> {
-    try {
-      const allProductsReview = this.productReviewService.getAllProductReview()
-      if (allProductsReview) {
-        return allProductsReview
-      } else {
-        return null
-      }
-    } catch (error) {
-      if (error) {
-        throw new Error()
-      }
-    }
+  async getAllProductsReview() {
+    return this.productReviewService.getAllProductReview()
   }
 
   @Get(":id")
-  async getSingleProductReview(
-    @Param("id", ParseIntPipe) id: number,
-  ): Promise<ProductReview | null> {
-    try {
-      const singleProductReview =
-        this.productReviewService.getSingleProductReview(id)
-      if (singleProductReview) {
-        return singleProductReview
-      } else {
-        return null
-      }
-    } catch (error) {
-      if (error) {
-        throw new Error()
-      }
-    }
+  async getSingleProductReview(@Param("id", ParseIntPipe) id: number) {
+    return this.productReviewService.getSingleProductReview(id)
   }
 
+  @UseGuards(IsAdminGuard)
+  @UseGuards(JwtGuard)
   @Put(":id")
   async updateProductReview(
     @Param("id", ParseIntPipe) id: number,
     @Body() updateDto: UpdateProductReviewDto,
-  ): Promise<ProductReview | null> {
+  ) {
     try {
       const updateProductReview =
         await this.productReviewService.updateProductRevoew(+id, updateDto)
@@ -78,7 +58,9 @@ export class ProductReviewController {
       }
     } catch (error) {
       if (error) {
-        throw new Error()
+        if (error) {
+          throw new NotFoundException(error.message)
+        }
       }
     }
   }

@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  ForbiddenException,
   Get,
   NotFoundException,
   Param,
@@ -10,53 +11,31 @@ import {
 } from "@nestjs/common"
 import { User } from "@prisma/client"
 import { GetUser } from "src/auth/decorator"
-import { JwtGurad } from "src/auth/guard"
-import { PrismaService } from "src/prisma/prisma.service"
+import { JwtGuard } from "src/auth/guard"
 import { UserService } from "./user.service"
 import { UpdateDto } from "src/auth/dto"
+import { IsAdminGuard } from "src/auth/guard/is-admin.guard"
 
 @Controller("user")
 export class UserController {
-  constructor(
-    private prisma: PrismaService,
-    private userService: UserService,
-  ) {}
+  constructor(private userService: UserService) {}
 
-  @UseGuards(JwtGurad)
+  @UseGuards(JwtGuard)
   @Get("me")
   getme(@GetUser() user: User) {
     return user
   }
 
+  @UseGuards(IsAdminGuard)
+  @UseGuards(JwtGuard)
   @Get("all-users")
-  async getAllUsers(): Promise<User[] | null> {
-    try {
-      const users = await this.userService.getAllUsers()
-      if (!users || users.data.length === 0) {
-        throw new NotFoundException("Users Not found")
-      }
-      return users.data
-    } catch (error) {
-      if (error) {
-        throw new NotFoundException("Users Not Found")
-      }
-      return []
-    }
+  async getAllUsers() {
+    return this.userService.getAllUsers()
   }
 
   @Get(":id")
-  async getSingleUser(
-    @Param("id", ParseIntPipe) id: number,
-  ): Promise<User | null> {
-    try {
-      const user = await this.userService.getSingleUser(id)
-      if (!user) {
-        throw new NotFoundException("User Not Found")
-      }
-      return user
-    } catch (error) {
-      throw new Error()
-    }
+  async getSingleUser(@Param("id", ParseIntPipe) id: number) {
+    return this.userService.getSingleUser(id)
   }
 
   @Put(":id")
@@ -72,7 +51,7 @@ export class UserController {
       return user
     } catch (error) {
       if (error) {
-        throw new Error("User data is not updated")
+        throw new ForbiddenException(error.message)
       }
     }
   }

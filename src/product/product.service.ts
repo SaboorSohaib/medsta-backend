@@ -1,8 +1,14 @@
-import { ForbiddenException, Injectable } from "@nestjs/common"
+import {
+  ForbiddenException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+  Res,
+  Response,
+} from "@nestjs/common"
 import { PrismaService } from "src/prisma/prisma.service"
 import { CreateProductDto, UpdateProductDto } from "./productDto"
 import { Product } from "@prisma/client"
-import { dot } from "node:test/reporters"
 
 @Injectable()
 export class ProductService {
@@ -15,6 +21,12 @@ export class ProductService {
       })
       if (!categoryId) {
         throw new ForbiddenException("Category id does not exist")
+      }
+      const productTitle = await this.prisma.product.findUnique({
+        where: { product_title: createDto.product_title },
+      })
+      if (productTitle) {
+        throw new ForbiddenException("Product with given title already exist")
       }
       const product = await this.prisma.product.create({
         data: {
@@ -33,21 +45,29 @@ export class ProductService {
           product_rating: createDto.product_rating,
         },
       })
-      return product
+      return {
+        success: true,
+        data: product,
+      }
     } catch (error) {
       if (error) {
-        throw new Error()
+        throw new NotFoundException(error.message)
       }
     }
   }
 
-  async getAllProducts(): Promise<Product[] | null> {
+  async getAllProducts() {
     try {
-      const allProducts = await this.prisma.product.findMany()
-      if (allProducts) {
-        return allProducts
-      } else {
-        return null
+      const allProducts: Product[] = await this.prisma.product.findMany()
+      if (allProducts.length === 0) {
+        return {
+          success: false,
+          data: [],
+        }
+      }
+      return {
+        success: true,
+        data: allProducts,
       }
     } catch (error) {
       if (error) {
@@ -56,37 +76,36 @@ export class ProductService {
     }
   }
 
-  async getSingleProduct(id: number): Promise<Product | null> {
+  async getSingleProduct(id: number) {
     try {
       const product = await this.prisma.product.findUnique({
         where: { id: id },
       })
       if (product) {
-        return product
+        return { success: true, data: product }
       } else {
-        return null
+        return { success: false, data: {} }
       }
     } catch (error) {
       if (error) {
-        throw new Error()
+        throw new NotFoundException(error.message)
       }
     }
   }
 
-  async updateProduct(
-    id: number,
-    updateDto: UpdateProductDto,
-  ): Promise<Product | null> {
+  async updateProduct(id: number, updateDto: UpdateProductDto) {
     try {
       const product = await this.prisma.product.update({
         data: updateDto,
         where: { id },
       })
 
-      return product
+      return { success: true, data: product }
     } catch (error) {
       if (error) {
-        throw new Error()
+        if (error) {
+          throw new NotFoundException(error.message)
+        }
       }
     }
   }
