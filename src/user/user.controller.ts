@@ -5,7 +5,6 @@ import {
   Get,
   NotFoundException,
   Param,
-  ParseIntPipe,
   Put,
   UseGuards,
 } from "@nestjs/common"
@@ -28,23 +27,23 @@ export class UserController {
 
   @UseGuards(IsAdminGuard)
   @UseGuards(JwtGuard)
-  @Get("all-users")
+  @Get("get-all-users")
   async getAllUsers() {
     return this.userService.getAllUsers()
   }
 
   @Get(":id")
-  async getSingleUser(@Param("id", ParseIntPipe) id: number) {
+  async getSingleUser(@Param("id") id: string) {
     return this.userService.getSingleUser(id)
   }
 
   @Put(":id")
   async updateSingleUser(
-    @Param("id", ParseIntPipe) id: number,
+    @Param("id") id: string,
     @Body() updateDto: UpdateDto,
   ) {
     try {
-      const user = await this.userService.updateSingleUser(+id, updateDto)
+      const user = await this.userService.updateSingleUser(id, updateDto)
       if (!id) {
         throw new NotFoundException(`User data with ${id} is not updated`)
       }
