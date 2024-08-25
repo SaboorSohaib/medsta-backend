@@ -8,6 +8,7 @@ import {
   CreateProductReviewDto,
   UpdateProductReviewDto,
 } from "./product-reviewDto"
+import * as cuid from "cuid"
 
 @Injectable()
 export class ProductReviewService {
@@ -21,8 +22,10 @@ export class ProductReviewService {
       if (!productId) {
         throw new NotFoundException("Product id does not exsist")
       }
+      const prefixedId = "prodReview_" + cuid()
       const productReview = await this.prisma.productReview.create({
         data: {
+          id: prefixedId,
           reviewer_name: createDto.reviewer_name,
           reviewer_email: createDto.reviewer_email,
           reviewer_photo: createDto.reviewer_photo,
@@ -43,8 +46,20 @@ export class ProductReviewService {
   async getAllProductReview() {
     try {
       const allProductsReview = await this.prisma.productReview.findMany()
-      if (allProductsReview) {
-        return { success: true, data: allProductsReview }
+      const products = await this.prisma.product.findMany()
+      const productReviewWithProduct = allProductsReview.map(
+        (prodReview: any) => {
+          const product = products.find(
+            (prod: any) => prod?.id === prodReview?.product_id,
+          )
+          return {
+            ...prodReview,
+            product_id: product,
+          }
+        },
+      )
+      if (productReviewWithProduct) {
+        return { success: true, data: productReviewWithProduct }
       } else {
         return { success: false, data: [] }
       }
@@ -55,7 +70,7 @@ export class ProductReviewService {
     }
   }
 
-  async getSingleProductReview(id: number) {
+  async getSingleProductReview(id: string) {
     try {
       const productReview = await this.prisma.productReview.findUnique({
         where: {
@@ -74,7 +89,7 @@ export class ProductReviewService {
     }
   }
 
-  async updateProductRevoew(id: number, updateDto: UpdateProductReviewDto) {
+  async updateProductRevoew(id: string, updateDto: UpdateProductReviewDto) {
     try {
       const updateProductReview = await this.prisma.productReview.update({
         where: { id },

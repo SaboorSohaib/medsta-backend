@@ -30,8 +30,8 @@ export class CreateProductDto {
   product_handle: string
 
   @IsNotEmpty()
-  @IsNumber()
-  category_id: number
+  @IsString()
+  category_id: string
 
   @IsBoolean()
   product_status
@@ -74,8 +74,8 @@ export class UpdateProductDto {
   product_handle: string
 
   @IsNotEmpty()
-  @IsNumber()
-  category_id: number
+  @IsString()
+  category_id: string
 
   @IsBoolean()
   product_status

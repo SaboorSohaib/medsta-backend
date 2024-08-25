@@ -4,7 +4,6 @@ import {
   NotFoundException,
   Post,
   Get,
-  ParseIntPipe,
   Param,
   Put,
   UseGuards,
@@ -31,7 +30,7 @@ export class ProductController {
   }
 
   @Get(":id")
-  async getSingleProduct(@Param("id", ParseIntPipe) id: number) {
+  async getSingleProduct(@Param("id") id: string) {
     return this.productService.getSingleProduct(id)
   }
 
@@ -39,12 +38,12 @@ export class ProductController {
   @UseGuards(JwtGuard)
   @Put(":id")
   async updateProduct(
-    @Param("id", ParseIntPipe) id: number,
+    @Param("id") id: string,
     @Body() updateProductDto: UpdateProductDto,
   ) {
     try {
       const updateSignleProduct = await this.productService.updateProduct(
-        +id,
+        id,
         updateProductDto,
       )
       if (updateSignleProduct) {

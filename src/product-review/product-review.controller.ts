@@ -4,7 +4,6 @@ import {
   Get,
   NotFoundException,
   Param,
-  ParseIntPipe,
   Post,
   Put,
   UseGuards,
@@ -31,13 +30,13 @@ export class ProductReviewController {
     return this.productReviewService.createProductReview(createDto)
   }
 
-  @Get("all-products-review")
+  @Get("get-all-products-review")
   async getAllProductsReview() {
     return this.productReviewService.getAllProductReview()
   }
 
   @Get(":id")
-  async getSingleProductReview(@Param("id", ParseIntPipe) id: number) {
+  async getSingleProductReview(@Param("id") id: string) {
     return this.productReviewService.getSingleProductReview(id)
   }
 
@@ -45,12 +44,12 @@ export class ProductReviewController {
   @UseGuards(JwtGuard)
   @Put(":id")
   async updateProductReview(
-    @Param("id", ParseIntPipe) id: number,
+    @Param("id") id: string,
     @Body() updateDto: UpdateProductReviewDto,
   ) {
     try {
       const updateProductReview =
-        await this.productReviewService.updateProductRevoew(+id, updateDto)
+        await this.productReviewService.updateProductRevoew(id, updateDto)
       if (updateProductReview) {
         return updateProductReview
       } else {

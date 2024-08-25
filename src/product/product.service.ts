@@ -6,6 +6,7 @@ import {
 import { PrismaService } from "src/prisma/prisma.service"
 import { CreateProductDto, UpdateProductDto } from "./productDto"
 import { Product } from "@prisma/client"
+import * as cuid from "cuid"
 
 @Injectable()
 export class ProductService {
@@ -25,8 +26,10 @@ export class ProductService {
       if (productTitle) {
         throw new ForbiddenException("Product with given title already exist")
       }
+      const prefixedId = "product_" + cuid()
       const product = await this.prisma.product.create({
         data: {
+          id: prefixedId,
           product_title: createDto.product_title,
           product_description: createDto.product_description,
           product_handle: createDto.product_handle,
@@ -83,7 +86,7 @@ export class ProductService {
     }
   }
 
-  async getSingleProduct(id: number) {
+  async getSingleProduct(id: string) {
     try {
       const product = await this.prisma.product.findUnique({
         where: { id: id },
@@ -105,7 +108,7 @@ export class ProductService {
     }
   }
 
-  async updateProduct(id: number, updateDto: UpdateProductDto) {
+  async updateProduct(id: string, updateDto: UpdateProductDto) {
     try {
       const product = await this.prisma.product.update({
         data: updateDto,

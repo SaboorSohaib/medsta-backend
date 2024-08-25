@@ -1,13 +1,5 @@
 import { Transform } from "class-transformer"
-import {
-  IsNotEmpty,
-  IsString,
-  IsNumber,
-  IsDate,
-  Min,
-  Max,
-  IsInt,
-} from "class-validator"
+import { IsNotEmpty, IsString, IsDate, Min, Max, IsInt } from "class-validator"
 
 export class CreateProductReviewDto {
   @IsNotEmpty()
@@ -38,8 +30,8 @@ export class CreateProductReviewDto {
   review_description: string
 
   @IsNotEmpty()
-  @IsNumber()
-  product_id: number
+  @IsString()
+  product_id: string
 }
 
 export class UpdateProductReviewDto {
@@ -71,6 +63,6 @@ export class UpdateProductReviewDto {
   review_description: string
 
   @IsNotEmpty()
-  @IsInt()
-  product_id: number
+  @IsString()
+  product_id: string
 }
