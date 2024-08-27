@@ -11,7 +11,7 @@ export class CreateCategoryDto {
 
   @IsNotEmpty()
   @IsString()
-  category_images: string
+  category_photo: string
 }
 
 export class UpdateCategoryDto {
@@ -25,5 +25,5 @@ export class UpdateCategoryDto {
 
   @IsNotEmpty()
   @IsString()
-  category_images: string
+  category_photo: string
 }

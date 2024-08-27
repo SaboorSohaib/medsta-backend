@@ -4,7 +4,6 @@ import {
   Get,
   NotFoundException,
   Param,
-  ParseIntPipe,
   Post,
   Put,
   UseGuards,
@@ -25,8 +24,6 @@ export class CategoryController {
     return this.categoryService.createCategory(createCategoryDto)
   }
 
-  @UseGuards(IsAdminGuard)
-  @UseGuards(JwtGuard)
   @Get("get-all-categories")
   async getAllCategories() {
     return this.categoryService.getAllCategories()
@@ -35,7 +32,7 @@ export class CategoryController {
   @UseGuards(IsAdminGuard)
   @UseGuards(JwtGuard)
   @Get(":id")
-  async getSingleCategory(@Param("id", ParseIntPipe) id: number) {
+  async getSingleCategory(@Param("id") id: string) {
     return this.categoryService.getSingleCategory(id)
   }
 
@@ -43,12 +40,12 @@ export class CategoryController {
   @UseGuards(JwtGuard)
   @Put(":id")
   async updateCategory(
-    @Param("id", ParseIntPipe) id: number,
+    @Param("id") id: string,
     @Body() updateDto: UpdateCategoryDto,
   ) {
     try {
       const updateCategory = await this.categoryService.updateCategory(
-        +id,
+        id,
         updateDto,
       )
       if (!id) {

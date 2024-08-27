@@ -5,7 +5,7 @@ import {
 } from "@nestjs/common"
 import { PrismaService } from "src/prisma/prisma.service"
 import { CreateCategoryDto, UpdateCategoryDto } from "./categoryDto"
-import { Category } from "@prisma/client"
+import * as cuid from "cuid"
 
 @Injectable()
 export class CategoryService {
@@ -13,11 +13,13 @@ export class CategoryService {
 
   async createCategory(categoryDto: CreateCategoryDto) {
     try {
+      const prefixedId = "category_" + cuid()
       const category = await this.prisma.category.create({
         data: {
+          id: prefixedId,
           category_name: categoryDto.category_name,
           category_handle: categoryDto.category_handle,
-          category_images: categoryDto.category_images,
+          category_photo: categoryDto.category_photo,
         },
       })
       return { success: true, data: category }
@@ -44,7 +46,7 @@ export class CategoryService {
     }
   }
 
-  async getSingleCategory(id: number) {
+  async getSingleCategory(id: string) {
     try {
       const category = await this.prisma.category.findUnique({
         where: {
@@ -62,7 +64,7 @@ export class CategoryService {
     }
   }
 
-  async updateCategory(id: number, updateDto: UpdateCategoryDto) {
+  async updateCategory(id: string, updateDto: UpdateCategoryDto) {
     try {
       const category = await this.prisma.category.update({
         data: updateDto,
