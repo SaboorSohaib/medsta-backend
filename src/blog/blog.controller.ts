@@ -4,14 +4,11 @@ import {
   ForbiddenException,
   Get,
   Param,
-  ParseIntPipe,
   Post,
   Put,
 } from "@nestjs/common"
 import { BlogService } from "./blog.service"
 import { CreateBlogDto, UpdateBlogDto } from "./blogDto"
-import { Blog } from "@prisma/client"
-import e from "express"
 
 @Controller("blog")
 export class BlogController {
@@ -22,26 +19,23 @@ export class BlogController {
     return this.blogService.createBlog(createBlog)
   }
 
-  @Get("all-blogs")
+  @Get("get-all-blogs")
   getAllBlogs() {
     return this.blogService.getAllBlogs()
   }
 
   @Get(":id")
-  getSingleBlog(@Param("id", ParseIntPipe) id: number) {
+  getSingleBlog(@Param("id") id: string) {
     return this.blogService.getSingleBlog(id)
   }
 
   @Put(":id")
   async updateSingleBlog(
-    @Param("id", ParseIntPipe) id: number,
+    @Param("id") id: string,
     @Body() updateDto: UpdateBlogDto,
   ) {
     try {
-      const updatedBlog = await this.blogService.updateSingleBlog(
-        +id,
-        updateDto,
-      )
+      const updatedBlog = await this.blogService.updateSingleBlog(id, updateDto)
       return updatedBlog
     } catch (error) {
       throw new ForbiddenException(error.message)

@@ -16,8 +16,8 @@ export class createAddressDto {
   zip_code: number
 
   @IsNotEmpty()
-  @IsNumber()
-  user_id: number
+  @IsString()
+  user_id: string
 }
 
 export class UpdateAddressDto {
@@ -37,6 +37,6 @@ export class UpdateAddressDto {
   zip_code: number
 
   @IsNotEmpty()
-  @IsNumber()
-  user_id: number
+  @IsString()
+  user_id: string
 }

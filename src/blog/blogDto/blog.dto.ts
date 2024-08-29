@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsInt } from "class-validator"
+import { IsString, IsNotEmpty } from "class-validator"
 
 export class CreateBlogDto {
   @IsNotEmpty()
@@ -19,15 +19,11 @@ export class CreateBlogDto {
 
   @IsNotEmpty()
   @IsString()
-  blog_category: string
+  user_id: string
 
   @IsNotEmpty()
-  @IsInt()
-  user_id: number
-
-  @IsNotEmpty()
-  @IsInt()
-  category_id: number
+  @IsString()
+  category_id: string
 }
 
 export class UpdateBlogDto {
@@ -47,15 +43,11 @@ export class UpdateBlogDto {
   @IsString()
   blog_author: string
 
-  @IsNotEmpty()
   @IsString()
-  blog_category: string
-
-  @IsInt()
   @IsNotEmpty()
-  user_id: number
+  user_id: string
 
-  @IsInt()
+  @IsString()
   @IsNotEmpty()
-  category_id: number
+  category_id: string
 }

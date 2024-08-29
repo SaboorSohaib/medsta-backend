@@ -5,7 +5,7 @@ import {
 } from "@nestjs/common"
 import { PrismaService } from "src/prisma/prisma.service"
 import { UpdateAddressDto, createAddressDto } from "./addressDto"
-import { Address } from "@prisma/client"
+import cuid from "cuid"
 
 @Injectable()
 export class AddressService {
@@ -18,8 +18,10 @@ export class AddressService {
       if (!userId) {
         throw new ForbiddenException(`User id does not exist`)
       }
+      const prefixedId = "address_" + cuid()
       const address = await this.prisma.address.create({
         data: {
+          id: prefixedId,
           country: createDto.country,
           city: createDto.city,
           state: createDto.state,
@@ -30,7 +32,6 @@ export class AddressService {
       return { success: true, data: address }
     } catch (error) {
       if (error) {
-        console.log("🚀 ~ AddressService ~ createAddress ~ error:", error)
         throw new ForbiddenException(error.message)
       }
     }
@@ -51,7 +52,7 @@ export class AddressService {
     }
   }
 
-  async getSingleAddress(id: number) {
+  async getSingleAddress(id: string) {
     try {
       const address = await this.prisma.address.findUnique({
         where: { id: id },
@@ -68,7 +69,7 @@ export class AddressService {
     }
   }
 
-  async updateAddress(id: number, updateDto: UpdateAddressDto) {
+  async updateAddress(id: string, updateDto: UpdateAddressDto) {
     try {
       const { user_id, country, city, zip_code, state } = updateDto
       const user = await this.prisma.user.findUnique({ where: { id: user_id } })

@@ -2,11 +2,10 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
-  NotFoundException,
 } from "@nestjs/common"
 import { PrismaService } from "src/prisma/prisma.service"
 import { CreateBlogDto, UpdateBlogDto } from "./blogDto"
-import { Blog } from "@prisma/client"
+import * as cuid from "cuid"
 
 @Injectable()
 export class BlogService {
@@ -21,7 +20,6 @@ export class BlogService {
         blog_description,
         blog_photo,
         blog_author,
-        blog_category,
       } = createBlog
 
       // Validate user_id
@@ -38,16 +36,17 @@ export class BlogService {
         throw new BadRequestException(
           `Category with ID ${category_id} does not exist`,
         )
-      }
+      } // Ensure you have the `cuid` package installed
+      const prefixedId = "blog_" + cuid()
       const blog = await this.prisma.blog.create({
         data: {
+          id: prefixedId,
           blog_title,
           blog_description,
           blog_photo,
           blog_author,
-          blog_category,
-          user_id,
-          category_id,
+          user: { connect: { id: user_id } },
+          category: { connect: { id: category_id } },
         },
       })
       return { success: true, data: blog }
@@ -61,10 +60,25 @@ export class BlogService {
   async getAllBlogs() {
     try {
       const blogs = await this.prisma.blog.findMany()
-      if (blogs) {
-        return { success: true, data: blogs }
-      } else {
-        return { success: false, data: [] }
+      const categories = await this.prisma.category.findMany()
+      const blogsWithCategory = blogs.map((blog: any) => {
+        const category = categories.find(
+          (cat: any) => cat.id === blog.category_id,
+        )
+        return {
+          ...blog,
+          category_id: category,
+        }
+      })
+      if (blogsWithCategory.length === 0) {
+        return {
+          success: false,
+          data: [],
+        }
+      }
+      return {
+        success: true,
+        data: blogsWithCategory,
       }
     } catch (error) {
       if (error) {
@@ -73,7 +87,7 @@ export class BlogService {
     }
   }
 
-  async getSingleBlog(id: number) {
+  async getSingleBlog(id: string) {
     try {
       const blog = await this.prisma.blog.findUnique({
         where: { id: id },
@@ -90,7 +104,7 @@ export class BlogService {
     }
   }
 
-  async updateSingleBlog(id: number, updateDto: UpdateBlogDto) {
+  async updateSingleBlog(id: string, updateDto: UpdateBlogDto) {
     try {
       const {
         user_id,
@@ -98,7 +112,6 @@ export class BlogService {
         blog_title,
         blog_description,
         blog_photo,
-        blog_category,
         blog_author,
       } = updateDto
 
@@ -124,7 +137,6 @@ export class BlogService {
           blog_description,
           blog_photo,
           blog_author,
-          blog_category,
           user: { connect: { id: user_id } },
           category: { connect: { id: category_id } },
         },
