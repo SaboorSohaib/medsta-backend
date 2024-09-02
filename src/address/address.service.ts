@@ -2,10 +2,11 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
+  NotFoundException,
 } from "@nestjs/common"
 import { PrismaService } from "src/prisma/prisma.service"
 import { UpdateAddressDto, createAddressDto } from "./addressDto"
-import cuid from "cuid"
+import * as cuid from "cuid"
 
 @Injectable()
 export class AddressService {
@@ -48,6 +49,19 @@ export class AddressService {
     } catch (error) {
       if (error) {
         throw new ForbiddenException(error.message)
+      }
+    }
+  }
+
+  async getAddressByUserId(id: string) {
+    try {
+      const currentUserAddresses = await this.prisma.address.findUnique({
+        where: { user_id: id },
+      })
+      return { success: true, data: currentUserAddresses }
+    } catch (error) {
+      if (error) {
+        throw new NotFoundException(error.message)
       }
     }
   }

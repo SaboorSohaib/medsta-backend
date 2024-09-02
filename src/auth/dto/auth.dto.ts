@@ -51,19 +51,18 @@ export class UpdateDto {
   @IsNotEmpty()
   photo: string
 
-  @IsString()
-  @IsNotEmpty()
-  role: string
-
   @IsEmail()
   @IsString()
   @IsNotEmpty()
   email: string
 
-  @IsNotEmpty()
-  password: string
-
   @IsString()
   @IsNotEmpty()
   phone_number: string
+}
+
+export class UpdatePassword {
+  @IsString()
+  @IsNotEmpty()
+  password: string
 }

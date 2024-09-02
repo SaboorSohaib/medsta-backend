@@ -34,6 +34,11 @@ export class AddressController {
     return this.addressService.getSingleAddress(id)
   }
 
+  @Get("user-address/:id")
+  getAddressByUserId(@Param("id") id: string) {
+    return this.addressService.getAddressByUserId(id)
+  }
+
   @Put(":id")
   async updateSingleAddress(
     @Param("id") id: string,
