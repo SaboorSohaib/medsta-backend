@@ -6,9 +6,12 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from "@nestjs/common"
 import { BlogService } from "./blog.service"
 import { CreateBlogDto, UpdateBlogDto } from "./blogDto"
+import { GetDataDto, Pagination } from "src/pagination/pagination.dto"
+import { PaginationParams } from "src/pagination/pagination.decorator"
 
 @Controller("blog")
 export class BlogController {
@@ -20,8 +23,18 @@ export class BlogController {
   }
 
   @Get("get-all-blogs")
-  getAllBlogs() {
-    return this.blogService.getAllBlogs()
+  async getAllBlogs(
+    @Query() getDataDto: GetDataDto,
+    @PaginationParams() paginationParams: Pagination,
+  ): Promise<{
+    success: boolean
+    data?: any[]
+    totalItems?: number
+    offset?: number
+    limit?: number
+    error?: string
+  }> {
+    return await this.blogService.getAllBlogs(paginationParams)
   }
 
   @Get(":id")

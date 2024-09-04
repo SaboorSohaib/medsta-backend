@@ -6,6 +6,8 @@ import {
 import { PrismaService } from "src/prisma/prisma.service"
 import { CreateCategoryDto, UpdateCategoryDto } from "./categoryDto"
 import * as cuid from "cuid"
+import { Pagination } from "src/pagination/pagination.dto"
+import { Category } from "@prisma/client"
 
 @Injectable()
 export class CategoryService {
@@ -32,13 +34,27 @@ export class CategoryService {
     }
   }
 
-  async getAllCategories() {
+  async getAllCategories(paginationParams: Pagination): Promise<{
+    success: boolean
+    data?: Category[]
+    totalItems?: number
+    offset?: number
+    limit?: number
+    error?: string
+  }> {
     try {
-      const categories = await this.prisma.category.findMany()
-      if (categories.length === 0) {
-        return { success: false, data: [] }
+      const totalCategories = await this.prisma.category.count()
+      const categories = await this.prisma.category.findMany({
+        take: paginationParams.limit,
+        skip: paginationParams.offset,
+      })
+      return {
+        success: true,
+        data: categories,
+        totalItems: totalCategories,
+        offset: paginationParams.page,
+        limit: paginationParams.size,
       }
-      return { success: true, data: categories }
     } catch (error) {
       if (error) {
         throw new NotFoundException(error.message)

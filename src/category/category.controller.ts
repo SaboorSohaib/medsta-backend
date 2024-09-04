@@ -6,12 +6,16 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UseGuards,
 } from "@nestjs/common"
 import { CategoryService } from "./category.service"
 import { CreateCategoryDto, UpdateCategoryDto } from "./categoryDto"
 import { IsAdminGuard } from "src/auth/guard/is-admin.guard"
 import { JwtGuard } from "src/auth/guard"
+import { GetDataDto, Pagination } from "src/pagination/pagination.dto"
+import { Category } from "@prisma/client"
+import { PaginationParams } from "src/pagination/pagination.decorator"
 
 @Controller("category")
 export class CategoryController {
@@ -25,8 +29,18 @@ export class CategoryController {
   }
 
   @Get("get-all-categories")
-  async getAllCategories() {
-    return this.categoryService.getAllCategories()
+  async getAllCategories(
+    @Query() getDataDto: GetDataDto,
+    @PaginationParams() paginationParams: Pagination,
+  ): Promise<{
+    success: boolean
+    data?: Category[]
+    totalItems?: number
+    offset?: number
+    limit?: number
+    error?: string
+  }> {
+    return await this.categoryService.getAllCategories(paginationParams)
   }
 
   @UseGuards(IsAdminGuard)

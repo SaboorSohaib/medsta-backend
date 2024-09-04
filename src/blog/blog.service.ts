@@ -6,6 +6,7 @@ import {
 import { PrismaService } from "src/prisma/prisma.service"
 import { CreateBlogDto, UpdateBlogDto } from "./blogDto"
 import * as cuid from "cuid"
+import { Pagination } from "src/pagination/pagination.dto"
 
 @Injectable()
 export class BlogService {
@@ -57,9 +58,20 @@ export class BlogService {
     }
   }
 
-  async getAllBlogs() {
+  async getAllBlogs(paginationParams: Pagination): Promise<{
+    success: boolean
+    data?: any[]
+    totalItems?: number
+    offset?: number
+    limit?: number
+    error?: string
+  }> {
     try {
-      const blogs = await this.prisma.blog.findMany()
+      const totalBlogs = await this.prisma.blog.count()
+      const blogs = await this.prisma.blog.findMany({
+        take: paginationParams.limit,
+        skip: paginationParams.offset,
+      })
       const categories = await this.prisma.category.findMany()
       const blogsWithCategory = blogs.map((blog: any) => {
         const category = categories.find(
@@ -70,15 +82,12 @@ export class BlogService {
           category_id: category,
         }
       })
-      if (blogsWithCategory.length === 0) {
-        return {
-          success: false,
-          data: [],
-        }
-      }
       return {
         success: true,
         data: blogsWithCategory,
+        totalItems: totalBlogs,
+        offset: paginationParams.page,
+        limit: paginationParams.size,
       }
     } catch (error) {
       if (error) {
@@ -92,10 +101,16 @@ export class BlogService {
       const blog = await this.prisma.blog.findUnique({
         where: { id: id },
       })
-      if (blog) {
-        return { success: true, data: blog }
-      } else {
-        return { success: false, data: [] }
+      const categories = await this.prisma.category.findMany()
+      const category = categories.find(
+        (cat: any) => cat.id === blog.category_id,
+      )
+      return {
+        success: true,
+        data: {
+          ...blog,
+          category_id: category,
+        },
       }
     } catch (error) {
       if (error) {
