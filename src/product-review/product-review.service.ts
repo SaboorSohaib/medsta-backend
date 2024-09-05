@@ -9,6 +9,7 @@ import {
   UpdateProductReviewDto,
 } from "./product-reviewDto"
 import * as cuid from "cuid"
+import { Pagination } from "src/pagination/pagination.dto"
 
 @Injectable()
 export class ProductReviewService {
@@ -43,9 +44,19 @@ export class ProductReviewService {
     }
   }
 
-  async getAllProductReview() {
+  async getAllProductReview(paginationParams: Pagination): Promise<{
+    success: boolean
+    data: any[]
+    totalItems: number
+    offset: number
+    limit: number
+  }> {
     try {
-      const allProductsReview = await this.prisma.productReview.findMany()
+      const totalItems = await this.prisma.productReview.count()
+      const allProductsReview = await this.prisma.productReview.findMany({
+        take: paginationParams.limit,
+        skip: paginationParams.offset,
+      })
       const products = await this.prisma.product.findMany()
       const productReviewWithProduct = allProductsReview.map(
         (prodReview: any) => {
@@ -58,10 +69,47 @@ export class ProductReviewService {
           }
         },
       )
-      if (productReviewWithProduct) {
-        return { success: true, data: productReviewWithProduct }
-      } else {
-        return { success: false, data: [] }
+      return {
+        success: true,
+        data: productReviewWithProduct,
+        totalItems: totalItems,
+        offset: paginationParams.page,
+        limit: paginationParams.size,
+      }
+    } catch (error) {
+      if (error) {
+        throw new NotFoundException(error.message)
+      }
+    }
+  }
+
+  async getReviewsByProductId(
+    id: string,
+    paginationParams: Pagination,
+  ): Promise<{
+    success: boolean
+    data: any[]
+    totalItems: number
+    offset: number
+    limit: number
+  }> {
+    try {
+      const whereCondition = { product_id: id }
+      const totalReviews = await this.prisma.productReview.count({
+        where: whereCondition,
+      })
+
+      const productReview = await this.prisma.productReview.findMany({
+        where: whereCondition,
+        take: paginationParams?.limit ?? totalReviews,
+        skip: paginationParams?.offset ?? 0,
+      })
+      return {
+        success: true,
+        data: productReview,
+        totalItems: totalReviews,
+        offset: paginationParams.page,
+        limit: paginationParams.size ?? totalReviews,
       }
     } catch (error) {
       if (error) {

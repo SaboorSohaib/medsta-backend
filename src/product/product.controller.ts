@@ -7,11 +7,14 @@ import {
   Param,
   Put,
   UseGuards,
+  Query,
 } from "@nestjs/common"
 import { CreateProductDto, UpdateProductDto } from "./productDto"
 import { ProductService } from "./product.service"
 import { IsAdminGuard } from "src/auth/guard/is-admin.guard"
 import { JwtGuard } from "src/auth/guard"
+import { PaginationParams } from "src/pagination/pagination.decorator"
+import { GetDataDto, Pagination } from "src/pagination/pagination.dto"
 
 @Controller("product")
 export class ProductController {
@@ -25,8 +28,18 @@ export class ProductController {
   }
 
   @Get("get-all-products")
-  async getAllProducts() {
-    return this.productService.getAllProducts()
+  async getAllProducts(
+    @Query() getDataDto: GetDataDto,
+    @PaginationParams() paginationParams: Pagination,
+  ): Promise<{
+    success: boolean
+    data?: any[]
+    totalItems?: number
+    offset?: number
+    limit?: number
+    error?: string
+  }> {
+    return await this.productService.getAllProducts(paginationParams)
   }
 
   @Get(":id")

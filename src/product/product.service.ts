@@ -7,6 +7,7 @@ import { PrismaService } from "src/prisma/prisma.service"
 import { CreateProductDto, UpdateProductDto } from "./productDto"
 import { Product } from "@prisma/client"
 import * as cuid from "cuid"
+import { Pagination } from "src/pagination/pagination.dto"
 
 @Injectable()
 export class ProductService {
@@ -56,9 +57,19 @@ export class ProductService {
     }
   }
 
-  async getAllProducts() {
+  async getAllProducts(paginationParams: Pagination): Promise<{
+    success: boolean
+    data?: any[]
+    totalItems?: number
+    offset?: number
+    limit?: number
+    error?: string
+  }> {
     try {
-      const allProducts: Product[] = await this.prisma.product.findMany()
+      const allProducts: Product[] = await this.prisma.product.findMany({
+        take: paginationParams.limit,
+        skip: paginationParams.offset,
+      })
       const categories = await this.prisma.category.findMany()
       const productsWithCategory = allProducts.map((prod: any) => {
         const category = categories.find(
@@ -69,15 +80,13 @@ export class ProductService {
           category_id: category,
         }
       })
-      if (productsWithCategory.length === 0) {
-        return {
-          success: false,
-          data: [],
-        }
-      }
+      const totalItems = await this.prisma.product.count()
       return {
         success: true,
         data: productsWithCategory,
+        totalItems: totalItems,
+        offset: paginationParams.page,
+        limit: paginationParams.size,
       }
     } catch (error) {
       if (error) {

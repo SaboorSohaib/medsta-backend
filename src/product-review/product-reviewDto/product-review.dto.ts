@@ -1,5 +1,4 @@
-import { Transform } from "class-transformer"
-import { IsNotEmpty, IsString, IsDate, Min, Max, IsInt } from "class-validator"
+import { IsNotEmpty, IsString, Min, Max, IsInt } from "class-validator"
 
 export class CreateProductReviewDto {
   @IsNotEmpty()
@@ -13,11 +12,6 @@ export class CreateProductReviewDto {
   @IsNotEmpty()
   @IsString()
   reviewer_photo: string
-
-  @Transform(({ value }) => new Date(value))
-  @IsNotEmpty()
-  @IsDate()
-  review_post_date: Date
 
   @IsNotEmpty()
   @IsInt()
@@ -46,11 +40,6 @@ export class UpdateProductReviewDto {
   @IsNotEmpty()
   @IsString()
   reviewer_photo: string
-
-  @Transform(({ value }) => new Date(value))
-  @IsNotEmpty()
-  @IsDate()
-  review_post_date: Date
 
   @IsNotEmpty()
   @IsInt()

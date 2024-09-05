@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UseGuards,
   UsePipes,
   ValidationPipe,
@@ -17,6 +18,8 @@ import {
 } from "./product-reviewDto"
 import { IsAdminGuard } from "src/auth/guard/is-admin.guard"
 import { JwtGuard } from "src/auth/guard"
+import { GetDataDto, Pagination } from "src/pagination/pagination.dto"
+import { PaginationParams } from "src/pagination/pagination.decorator"
 
 @Controller("product-review")
 export class ProductReviewController {
@@ -31,8 +34,32 @@ export class ProductReviewController {
   }
 
   @Get("get-all-products-review")
-  async getAllProductsReview() {
-    return this.productReviewService.getAllProductReview()
+  async getAllProductsReview(
+    @Query() getDataDto: GetDataDto,
+    @PaginationParams() paginationParams: Pagination,
+  ): Promise<{
+    success: boolean
+    data: any[]
+    totalItems: number
+    offset: number
+    limit: number
+  }> {
+    return await this.productReviewService.getAllProductReview(paginationParams)
+  }
+
+  @Get(":id")
+  async getReviewsByProductId(
+    @Param("id") id: string,
+    @Query() getDataDto: GetDataDto,
+    @PaginationParams() paginationParams: Pagination,
+  ): Promise<{
+    success: boolean
+    data: any[]
+    totalItems: number
+    offset: number
+    limit: number
+  }> {
+    return this.productReviewService.getReviewsByProductId(id, paginationParams)
   }
 
   @Get(":id")
