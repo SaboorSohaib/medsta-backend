@@ -19,17 +19,14 @@ export class AuthController {
   ) {}
 
   @Post("signup")
-  Signup(@Body() dto: AuthDto) {
-    return this.authService.Signup(dto)
+  Signup(@Body() dto: AuthDto, @Res({ passthrough: true }) res) {
+    return this.authService.Signup(dto, res)
   }
 
   @HttpCode(HttpStatus.OK)
   @Post("signin")
   Signin(@Body() dto: SigninDto, @Res({ passthrough: true }) res) {
-    res.cookie("token", this.jwtService.sign(dto), {
-      expires: new Date(Date.now() + 3600000),
-    })
-    return this.authService.Signin(dto)
+    return this.authService.Signin(dto, res)
   }
 
   @Delete("signout")

@@ -1,23 +1,22 @@
 import { ForbiddenException, Injectable } from "@nestjs/common"
-import { ConfigService } from "@nestjs/config"
-import { JwtService } from "@nestjs/jwt"
 import { PrismaService } from "src/prisma/prisma.service"
 import { AuthDto, SigninDto } from "./dto"
 import * as argon from "argon2"
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
 import { UserService } from "src/user/user.service"
-import { User } from "@prisma/client"
+import { JwtService } from "@nestjs/jwt"
+import { ConfigService } from "@nestjs/config"
 
 @Injectable()
 export class AuthService {
   constructor(
     private prisma: PrismaService,
-    private jwt: JwtService,
     private userService: UserService,
+    private jwt: JwtService,
     private config: ConfigService,
   ) {}
 
-  async Signup(dto: AuthDto) {
+  async Signup(dto: AuthDto, res: any) {
     try {
       const password = await argon.hash(dto.password)
       const userCount = await this.prisma.user.count()
@@ -32,7 +31,7 @@ export class AuthService {
           role: userCount === 0 ? "admin" : "user",
         },
       })
-      return this.SignInToken(user.id, user.email)
+      return this.SignInToken(user.id, user.email, user.role, res)
     } catch (error) {
       if (error instanceof PrismaClientKnownRequestError) {
         if (error.code === "P2002") {
@@ -43,7 +42,7 @@ export class AuthService {
     }
   }
 
-  async Signin(dto: SigninDto) {
+  async Signin(dto: SigninDto, res) {
     try {
       const user = await this.prisma.user.findUnique({
         where: { email: dto.email },
@@ -56,7 +55,7 @@ export class AuthService {
       if (!passwordComparison) {
         throw new ForbiddenException("Credentials is incorrect")
       }
-      return this.SignInToken(user.id, user.email)
+      return this.SignInToken(user.id, user.email, user.role, res)
     } catch (error) {
       if (error) {
         throw new ForbiddenException(error.message)
@@ -75,19 +74,30 @@ export class AuthService {
   async SignInToken(
     userId: number,
     email: string,
-  ): Promise<{ access_token: string }> {
+    role: string,
+    res: any,
+  ): Promise<{ success: boolean; data: any }> {
     const payload = {
       sub: userId,
       email,
+      role,
     }
     const secret = this.config.get("JWT_SECRET")
     const token = await this.jwt.signAsync(payload, {
       expiresIn: "60m",
       secret: secret,
     })
-
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      expires: new Date(Date.now() + 3600000), // 1 hour
+    })
+    const user = await this.prisma.user.findUnique({ where: { id: userId } })
+    delete user.password
     return {
-      access_token: token,
+      success: true,
+      data: user,
     }
   }
 }

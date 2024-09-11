@@ -11,7 +11,6 @@ import {
 } from "@nestjs/common"
 import { CreateProductDto, UpdateProductDto } from "./productDto"
 import { ProductService } from "./product.service"
-import { Product } from "@prisma/client"
 import { IsAdminGuard } from "src/auth/guard/is-admin.guard"
 import { JwtGuard } from "src/auth/guard"
 
@@ -41,12 +40,12 @@ export class ProductController {
   @Put(":id")
   async updateProduct(
     @Param("id", ParseIntPipe) id: number,
-    @Body() UpdateProductDto: UpdateProductDto,
+    @Body() updateProductDto: UpdateProductDto,
   ) {
     try {
       const updateSignleProduct = await this.productService.updateProduct(
         +id,
-        UpdateProductDto,
+        updateProductDto,
       )
       if (updateSignleProduct) {
         return { success: true, data: updateSignleProduct }

@@ -1,10 +1,7 @@
 import {
   ForbiddenException,
-  HttpStatus,
   Injectable,
   NotFoundException,
-  Res,
-  Response,
 } from "@nestjs/common"
 import { PrismaService } from "src/prisma/prisma.service"
 import { CreateProductDto, UpdateProductDto } from "./productDto"
@@ -59,7 +56,17 @@ export class ProductService {
   async getAllProducts() {
     try {
       const allProducts: Product[] = await this.prisma.product.findMany()
-      if (allProducts.length === 0) {
+      const categories = await this.prisma.category.findMany()
+      const productsWithCategory = allProducts.map((prod: any) => {
+        const category = categories.find(
+          (cat: any) => cat.id === prod.category_id,
+        )
+        return {
+          ...prod,
+          category_id: category,
+        }
+      })
+      if (productsWithCategory.length === 0) {
         return {
           success: false,
           data: [],
@@ -67,7 +74,7 @@ export class ProductService {
       }
       return {
         success: true,
-        data: allProducts,
+        data: productsWithCategory,
       }
     } catch (error) {
       if (error) {
@@ -81,8 +88,13 @@ export class ProductService {
       const product = await this.prisma.product.findUnique({
         where: { id: id },
       })
-      if (product) {
-        return { success: true, data: product }
+      const category = await this.prisma.category.findUnique({
+        where: { id: product?.category_id },
+      })
+
+      const prdoductCategory = { ...product, category_id: category }
+      if (prdoductCategory) {
+        return { success: true, data: prdoductCategory }
       } else {
         return { success: false, data: {} }
       }
