@@ -43,6 +43,11 @@ export class CategoryController {
     return await this.categoryService.getAllCategories(paginationParams)
   }
 
+  @Get("get-top-categories")
+  async topCategories() {
+    return this.categoryService.topCategories()
+  }
+
   @UseGuards(IsAdminGuard)
   @UseGuards(JwtGuard)
   @Get(":id")

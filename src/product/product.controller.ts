@@ -42,6 +42,10 @@ export class ProductController {
     return await this.productService.getAllProducts(paginationParams)
   }
 
+  @Get("search")
+  async searchProduct(@Query("query") query: string) {
+    return this.productService.serachProduct(query)
+  }
   @Get(":id")
   async getSingleProduct(@Param("id") id: string) {
     return this.productService.getSingleProduct(id)

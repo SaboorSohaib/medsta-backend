@@ -15,6 +15,9 @@ import { ProductReviewModule } from "./product-review/product-review.module"
 import { AddressController } from "./address/address.controller"
 import { AddressModule } from "./address/address.module"
 import { AddressService } from "./address/address.service"
+import { OrderService } from "./order/order.service"
+import { OrderController } from "./order/order.controller"
+import { OrderModule } from "./order/order.module"
 
 @Module({
   imports: [
@@ -27,13 +30,20 @@ import { AddressService } from "./address/address.service"
     ProductModule,
     ProductReviewModule,
     AddressModule,
+    OrderModule,
   ],
-  controllers: [BlogController, ProductController, AddressController],
+  controllers: [
+    BlogController,
+    ProductController,
+    AddressController,
+    OrderController,
+  ],
   providers: [
     AddressService,
     BlogService,
     ProductService,
     ProductReviewService,
+    OrderService,
   ],
 })
 export class AppModule {}

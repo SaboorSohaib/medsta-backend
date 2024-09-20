@@ -67,6 +67,11 @@ export class ProductService {
   }> {
     try {
       const allProducts: Product[] = await this.prisma.product.findMany({
+        orderBy: [
+          {
+            createdAt: "desc",
+          },
+        ],
         take: paginationParams.limit,
         skip: paginationParams.offset,
       })
@@ -90,7 +95,7 @@ export class ProductService {
       }
     } catch (error) {
       if (error) {
-        throw new Error()
+        throw new NotFoundException(error.message)
       }
     }
   }
@@ -117,6 +122,48 @@ export class ProductService {
     }
   }
 
+  async serachProduct(query: string) {
+    try {
+      const products = await this.prisma.product.findMany({
+        where: {
+          OR: [
+            {
+              product_title: {
+                contains: query,
+                mode: "insensitive",
+              },
+            },
+          ],
+        },
+      })
+      const categories = await this.prisma.category.findMany()
+      const productsWithCategory = products.map((prod: any) => {
+        const category = categories.find(
+          (cat: any) => cat.id === prod.category_id,
+        )
+        return {
+          ...prod,
+          category_id: category,
+        }
+      })
+      if (products.length > 0) {
+        return {
+          success: true,
+          data: productsWithCategory,
+        }
+      } else {
+        return {
+          success: false,
+          data: [],
+        }
+      }
+    } catch (error) {
+      if (error) {
+        throw new NotFoundException(error.message)
+      }
+    }
+  }
+
   async updateProduct(id: string, updateDto: UpdateProductDto) {
     try {
       const product = await this.prisma.product.update({
@@ -127,9 +174,7 @@ export class ProductService {
       return { success: true, data: product }
     } catch (error) {
       if (error) {
-        if (error) {
-          throw new NotFoundException(error.message)
-        }
+        throw new NotFoundException(error.message)
       }
     }
   }

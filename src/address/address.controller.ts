@@ -17,9 +17,9 @@ import { IsAdminGuard } from "src/auth/guard/is-admin.guard"
 export class AddressController {
   constructor(private addressService: AddressService) {}
 
-  @Post("add-address")
-  createAddress(@Body() createBlog: createAddressDto): Promise<any> {
-    return this.addressService.createAddress(createBlog)
+  @Post("create-address")
+  createAddress(@Body() createAddress: createAddressDto): Promise<any> {
+    return this.addressService.createAddress(createAddress)
   }
 
   @UseGuards(IsAdminGuard)

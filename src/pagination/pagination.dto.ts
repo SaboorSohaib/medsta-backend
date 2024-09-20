@@ -24,11 +24,6 @@ export interface Pagination {
   offset: number // Number of items to skip
 }
 
-export interface Sorting {
-  property: string // The field to sort by, e.g., 'name' or 'email'
-  direction: "asc" | "desc" // Sorting direction, 'asc' for ascending, 'desc' for descending
-}
-
 export enum FilterRule {
   EQUALS = "eq",
   NOT_EQUALS = "neq",

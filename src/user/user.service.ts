@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from "@nestjs/common"
 import { User } from "@prisma/client"
-import { Filtering, Pagination, Sorting } from "src/pagination/pagination.dto"
+import { Filtering, Pagination } from "src/pagination/pagination.dto"
 import { UpdateDto, UpdatePassword } from "src/auth/dto"
 import { PrismaService } from "src/prisma/prisma.service"
 import { getWhere } from "src/pagination/pagination.dto"
@@ -17,7 +17,6 @@ export class UserService {
 
   async getAllUsers(
     paginationParams: Pagination, // Includes page, size, limit, offset
-    sort?: Sorting, // Sorting parameters
     filter?: Filtering, // Filtering parameters
   ): Promise<{
     success: boolean
@@ -31,14 +30,15 @@ export class UserService {
       // Construct the 'where' clause for filtering
       const where = getWhere(filter)
 
-      // Construct the 'orderBy' clause for sorting
-      const orderBy = sort ? { [sort.property]: sort.direction } : {}
-
       // Fetch users with pagination, sorting, and filtering
       const [users, total] = await Promise.all([
         this.prisma.user.findMany({
           where,
-          orderBy,
+          orderBy: [
+            {
+              createdAt: "desc",
+            },
+          ],
           take: paginationParams.limit, // number of items per page
           skip: paginationParams.offset, // number of items to skip
         }),

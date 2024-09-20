@@ -69,6 +69,11 @@ export class BlogService {
     try {
       const totalBlogs = await this.prisma.blog.count()
       const blogs = await this.prisma.blog.findMany({
+        orderBy: [
+          {
+            createdAt: "desc",
+          },
+        ],
         take: paginationParams.limit,
         skip: paginationParams.offset,
       })

@@ -54,6 +54,11 @@ export class ProductReviewService {
     try {
       const totalItems = await this.prisma.productReview.count()
       const allProductsReview = await this.prisma.productReview.findMany({
+        orderBy: [
+          {
+            createdAt: "desc",
+          },
+        ],
         take: paginationParams.limit,
         skip: paginationParams.offset,
       })

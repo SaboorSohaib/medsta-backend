@@ -45,6 +45,11 @@ export class CategoryService {
     try {
       const totalCategories = await this.prisma.category.count()
       const categories = await this.prisma.category.findMany({
+        orderBy: [
+          {
+            createdAt: "desc",
+          },
+        ],
         take: paginationParams.limit,
         skip: paginationParams.offset,
       })
@@ -73,6 +78,39 @@ export class CategoryService {
         return { success: false, data: [] }
       }
       return { success: true, data: category }
+    } catch (error) {
+      if (error) {
+        throw new NotFoundException(error.message)
+      }
+    }
+  }
+
+  async topCategories() {
+    try {
+      const topCategories = await this.prisma.category.findMany({
+        take: 5,
+        orderBy: {
+          products: {
+            _count: "desc",
+          },
+        },
+        include: {
+          _count: {
+            select: { products: true },
+          },
+        },
+      })
+
+      const count = topCategories.map((category: any) => {
+        return {
+          category_name: category.category_name,
+          product_count: category._count.products,
+        }
+      })
+      return {
+        success: true,
+        data: count,
+      }
     } catch (error) {
       if (error) {
         throw new NotFoundException(error.message)

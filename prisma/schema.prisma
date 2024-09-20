@@ -58,6 +58,7 @@ model Address {
   zip_code    Int?
   user_id     String     @unique
   users       User    @relation(fields: [user_id], references: [id])
+  orders      Order[]
 
   @@map("addresses")
 }
@@ -103,9 +104,26 @@ model ProductReview {
   reviewer_name       String
   reviewer_email      String
   reviewer_photo      String
-  review_rating       Int 
+  review_rating       Int
   review_description  String
   product_id          String
   createdAt           DateTime @default(now())
   product             Product @relation(fields: [product_id], references: [id])
+}
+
+model Order {
+  id            String @id @default(cuid())
+  products      Json
+  first_name    String
+  last_name     String
+  email         String
+  phone_number  String
+  order_status  String @default("pending")
+  order_notes   String?
+  total_price   Int
+  total_product Int
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  user_address  String
+  address       Address @relation(fields: [user_address], references: [id])
 }

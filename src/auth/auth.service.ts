@@ -92,14 +92,14 @@ export class AuthService {
     }
     const secret = this.config.get("JWT_SECRET")
     const token = await this.jwt.signAsync(payload, {
-      expiresIn: "180m",
+      expiresIn: "24h",
       secret: secret,
     })
     res.cookie("token", token, {
       httpOnly: true,
       secure: false,
       sameSite: "lax",
-      expires: new Date(Date.now() + 7200000), // 1 hour
+      expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
     })
     const user = await this.prisma.user.findUnique({ where: { id: userId } })
     delete user.password
