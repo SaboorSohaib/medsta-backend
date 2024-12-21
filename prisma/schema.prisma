@@ -6,6 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["relationJoins"]
 }
 
 datasource db {
@@ -13,8 +14,116 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
-  id Int  
-  emali String @unique
+  id           String    @id @default(cuid()) 
+  first_name   String
+  last_name    String
+  email        String   @unique
+  password     String 
+  photo        String
+  role         String   @default("user")
+  phone_number String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  blogs        Blog[]
+  address      Address?
+
+  @@map("users")
+}
+
+
+model Blog {
+  id               String    @id @default(cuid())
+  blog_title       String
+  blog_description String
+  blog_author      String
+  blog_photo       String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  user_id          String
+  category_id      String
+  user             User @relation(fields: [user_id], references: [id])
+  category         Category @relation(fields: [category_id], references: [id])
+
+  @@map("blogs")
+}
+
+model Address {
+  id          String     @id @default(cuid())
+  country     String
+  city        String
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  state       String?
+  zip_code    Int?
+  user_id     String     @unique
+  users       User    @relation(fields: [user_id], references: [id])
+  orders      Order[]
+
+  @@map("addresses")
+}
+
+model Product {
+  id                  String    @id @default(cuid())
+  product_title       String @unique
+  product_price       Int
+  product_photo       String
+  product_description String
+  product_status      Boolean  @default(false)
+  manufacturing       String
+  product_handle      String
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+  product_rating      Int?
+  product_before_off_price Int?
+  product_type        String?
+  in_stock            Boolean?
+  life                String?
+  category_id         String
+  categories          Category @relation(fields: [category_id], references: [id])
+  product_reviews     ProductReview[]
+
+  @@map("products")
+}
+
+model Category {
+  id              String @id @default(cuid())
+  category_name   String
+  category_handle String
+  category_photo  String
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  products        Product[]
+  blogs           Blog[]
+
+  @@map("categories")
+}
+
+model ProductReview {
+  id                  String @id @default(cuid())
+  reviewer_name       String
+  reviewer_email      String
+  reviewer_photo      String
+  review_rating       Int
+  review_description  String
+  product_id          String
+  createdAt           DateTime @default(now())
+  product             Product @relation(fields: [product_id], references: [id])
+}
+
+model Order {
+  id            String @id @default(cuid())
+  products      Json
+  first_name    String
+  last_name     String
+  email         String
+  phone_number  String
+  order_status  String @default("pending")
+  order_notes   String?
+  total_price   Int
+  total_product Int
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  user_address  String
+  address       Address @relation(fields: [user_address], references: [id])
 }
