@@ -18,6 +18,7 @@ import { AddressService } from "./address/address.service"
 import { OrderService } from "./order/order.service"
 import { OrderController } from "./order/order.controller"
 import { OrderModule } from "./order/order.module"
+import { MailModule } from "./mail/mail.module"
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { OrderModule } from "./order/order.module"
     ProductReviewModule,
     AddressModule,
     OrderModule,
+    MailModule,
   ],
   controllers: [
     BlogController,

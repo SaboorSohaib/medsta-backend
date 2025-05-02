@@ -26,6 +26,11 @@ export class OrderController {
     return this.orderService.createProduct(createOrderDto)
   }
 
+  @Get("getOrderCalculation")
+  async getOrderCalculation() {
+    return await this.orderService.getOrdersCalculation()
+  }
+
   @UseGuards(IsAdminGuard)
   @UseGuards(JwtGuard)
   @Get("get-all-orders")
@@ -76,7 +81,7 @@ export class OrderController {
   async updateOrder(@Param("id") id: string, @Body() updateOrder: UpdateOrder) {
     return this.orderService.updateOrder(id, updateOrder)
   }
-  catch(error) {
+  catch(error: any) {
     if (error) {
       throw new NotFoundException(error.message)
     }

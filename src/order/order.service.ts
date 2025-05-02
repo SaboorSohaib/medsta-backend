@@ -265,6 +265,50 @@ export class OrderService {
     }
   }
 
+  async getOrdersCalculation() {
+    try {
+      const totalRevenue = await this.prisma.order.aggregate({
+        _sum: {
+          total_price: true,
+        },
+      })
+      const topOrder = await this.prisma.order.aggregate({
+        _max: {
+          total_price: true,
+        },
+      })
+      const lastOrder = await this.prisma.order.findMany({
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: 1,
+      })
+      const totalOrders = await this.prisma.order.count()
+      const totalCategories = await this.prisma.category.count()
+      const totalProducts = await this.prisma.product.count()
+      const totalCustomers = await this.prisma.user.count()
+      const totalBlogs = await this.prisma.blog.count()
+      const data = [
+        { totalRevenue: `$${totalRevenue._sum.total_price}` },
+        { topOrder: `$${topOrder._max.total_price}` },
+        { lastOrder: `$${lastOrder[0].total_price}` },
+        { totalOrders: totalOrders },
+        { totalCategories: totalCategories },
+        { totalProducts: totalProducts },
+        { totalCustomers: totalCustomers },
+        { totalBlogs: totalBlogs },
+      ]
+      return {
+        success: true,
+        data: data,
+      }
+    } catch (error: any) {
+      if (error) {
+        throw new NotFoundException(error.message)
+      }
+    }
+  }
+
   async updateOrder(id: string, updateDto: UpdateOrder) {
     try {
       const fieldsToUpdate = Object.keys(updateDto)

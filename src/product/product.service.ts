@@ -76,13 +76,50 @@ export class ProductService {
         skip: paginationParams.offset,
       })
       const categories = await this.prisma.category.findMany()
+      const productReviews = await this.prisma.productReview.findMany()
+
+      const productReviewMap = new Map<
+        string,
+        { total: number; count: number }
+      >()
+
+      // Step 1: Group and sum ratings by product_id
+      productReviews.forEach((review: any) => {
+        const { product_id, review_rating } = review
+
+        if (!productReviewMap.has(product_id)) {
+          productReviewMap.set(product_id, { total: review_rating, count: 1 })
+        } else {
+          const current = productReviewMap.get(product_id)
+          productReviewMap.set(product_id, {
+            total: current.total + review_rating,
+            count: current.count + 1,
+          })
+        }
+      })
+
+      // Step 2: Create a new Map of product_id -> average_rating
+      const averageRatings = new Map(
+        Array.from(productReviewMap.entries()).map(
+          ([product_id, { total, count }]) => [
+            product_id,
+            parseFloat((total / count).toFixed(1)), // one decimal place
+          ],
+        ),
+      )
+
+      // Step 3: Merge into final product objects
       const productsWithCategory = allProducts.map((prod: any) => {
         const category = categories.find(
           (cat: any) => cat.id === prod.category_id,
         )
+
+        const averageRating = averageRatings.get(prod.id) || 0 // default to 0 if no rating
+        delete prod.product_rating
         return {
           ...prod,
-          category_id: category,
+          rating: averageRating,
+          category: category, // or category_id if you want only the id
         }
       })
       const totalItems = await this.prisma.product.count()
@@ -109,9 +146,28 @@ export class ProductService {
         where: { id: product?.category_id },
       })
 
-      const prdoductCategory = { ...product, category_id: category }
-      if (prdoductCategory) {
-        return { success: true, data: prdoductCategory }
+      const singleProductReview = await this.prisma.productReview.findMany({
+        where: { product_id: id },
+      })
+
+      const totalReviews = singleProductReview.length
+      const totalRating = singleProductReview.reduce(
+        (sum, review) => sum + review.review_rating,
+        0,
+      )
+      const averageRating =
+        totalReviews > 0
+          ? parseFloat((totalRating / totalReviews).toFixed(1))
+          : 0
+
+      const productWithCategoryAndRating = {
+        ...product,
+        category: category,
+        average_rating: averageRating,
+      }
+
+      if (productWithCategoryAndRating) {
+        return { success: true, data: productWithCategoryAndRating }
       } else {
         return { success: false, data: {} }
       }
