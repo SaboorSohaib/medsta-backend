@@ -1,73 +1,218 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# 🛒 Medsta Back-end
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+**Medsta Back-end** is a full-featured e-commerce backend built with **NestJS**, **PostgreSQL**, and **Prisma ORM**.  
+It allows users to register, browse products, place and track orders, and post reviews.  
+An integrated **admin panel** enables management of categories, products, blogs, and more.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## 📦 Tech Stack
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- **Backend Framework**: [NestJS](https://nestjs.com/)
+- **Database**: [PostgreSQL](https://www.postgresql.org/)
+- **ORM**: [Prisma](https://www.prisma.io/)
+- **Authentication**: JWT (JSON Web Token)
 
-## Installation
+---
 
-```bash
-$ npm install
+## 📁 Project Structure
+
+```
+src/
+├── auth/              # JWT authentication logic
+├── user/              # User registration and profile management
+├── address/           # User addresses
+├── category/          # Product categories
+├── product/           # Product CRUD & queries
+├── blog/              # Admin-created blogs
+├── product-reviews/   # Product reviews by users
+├── order/             # Order placement and tracking
+├── prisma/            # PrismaService & database schema
+├── main.ts            # App entry point
 ```
 
-## Running the app
+---
 
-```bash
-# development
-$ npm run start
+## ⚙️ Environment Setup
 
-# watch mode
-$ npm run start:dev
+Create a `.env` file in the root directory:
 
-# production mode
-$ npm run start:prod
+```env
+DATABASE_URL="postgresql://<USER>:<PASSWORD>@<HOST>:<PORT>/<DB_NAME>"
+JWT_SECRET="your_jwt_secret"
+PORT=9000
+FRONTEND_URL="Your Front-end URL"
+APP_PASSWORD="Password for email integration"
+APP_EMAIL="Your Email"
+APP_PROT=App port
 ```
 
-## Test
+---
+
+## 🛠️ Prisma Setup
 
 ```bash
-# unit tests
-$ npm run test
+# Generate Prisma client
+npx prisma generate
 
-# e2e tests
-$ npm run test:e2e
+# Run database migrations
+npx prisma migrate dev --name init
 
-# test coverage
-$ npm run test:cov
+# Open Prisma Studio
+npx prisma studio
 ```
 
-## Support
+## 🚀 Getting Started
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### 1. Clone & Install
 
-## Stay in touch
+```bash
+git clone git@github.com:SaboorSohaib/medsta-backend.git
+cd medsta-backend
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```
 
-## License
+# 📘 PostgreSQL CLI Reference for Medsta
 
-Nest is [MIT licensed](LICENSE).
+This file contains essential PostgreSQL commands for setting up and managing your development database.
+
+---
+
+## 🗃️ Database Creation
+
+```bash
+# Create a new PostgreSQL database
+createdb medsta_db
+
+# Create a database with a specific owner
+createdb -O your_db_user medsta_db
+```
+
+---
+
+## 🗑️ Database Deletion
+
+```bash
+# Drop/delete a PostgreSQL database
+dropdb medsta_db
+```
+
+---
+
+## 👤 User Management
+
+```bash
+# Create a new PostgreSQL user
+createuser your_db_user
+
+# Create user with password and permissions (inside psql shell)
+CREATE USER your_db_user WITH PASSWORD 'your_password';
+
+# Grant privileges to a user
+GRANT ALL PRIVILEGES ON DATABASE medsta_db TO your_db_user;
+```
+
+---
+
+## 🏗️ Connecting to PostgreSQL
+
+```bash
+# Connect to the PostgreSQL database
+psql -U your_db_user -d medsta_db
+```
+
+---
+
+## 📋 List & Inspect
+
+```bash
+# List all databases
+psql -l
+
+# List all users
+psql -c '\du'
+
+# Inside psql shell: list tables
+\dt
+
+# Inside psql shell: describe a table
+\d tablename
+```
+
+---
+
+> 💡 Note: Escape backslashes (\) in shell scripts or markdown code blocks.
+
+### 2. Run the App
+
+```bash
+# Development mode
+npm run start:dev
+
+# Production build
+npm run build
+npm run start:prod
+```
+
+App will be available at:  
+`http://localhost:9000`
+
+---
+
+## 🔐 Authentication
+
+All protected routes use JWT-based auth.
+
+---
+
+## 📘 API Overview
+
+Medsta provides these RESTful endpoints:
+
+| Module     | Route Prefix | Description                     |
+| ---------- | ------------ | ------------------------------- |
+| Auth       | `/auth`      | Register, login, refresh tokens |
+| Users      | `/user`      | Profile management              |
+| Address    | `/address`   | Manage shipping addresses       |
+| Categories | `/category`  | CRUD categories                 |
+| Products   | `/product`   | View/search/create products     |
+| Blogs      | `/blog`      | Blog post CRUD (admin)          |
+| Reviews    | `/review`    | Product review handling         |
+| Orders     | `/order`     | Place and track orders          |
+
+---
+
+---
+
+## 💡 Useful Commands
+
+```bash
+# Lint code
+npm run lint
+
+# Format code
+npm run format
+
+# Prisma commands
+npx prisma generate
+npx prisma migrate dev
+npx prisma studio
+```
+
+---
+
+## 🤝 Contributing
+
+Pull requests are welcome. For major changes, please open an issue first to discuss improvements or fixes.
+
+---
+
+## 📜 License
+
+This project is licensed under the [MIT License](LICENSE).
+
+---
+
+## 👨‍💻 Author
+
+Built with ❤️ by Abdul Saboor Sohaib.

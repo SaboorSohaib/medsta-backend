@@ -70,10 +70,10 @@ model Product {
   product_photo       String
   product_description String
   product_status      Boolean  @default(false)
-  manufacturing       String
   product_handle      String
   createdAt           DateTime   @default(now())
   updatedAt           DateTime   @updatedAt
+  manufacturing       String?
   product_rating      Int?
   product_before_off_price Int?
   product_type        String?
