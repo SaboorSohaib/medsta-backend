@@ -97,8 +97,8 @@ export class AuthService {
     })
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
+      secure: true,
+      sameSite: "None",
       expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
     })
     const user = await this.prisma.user.findUnique({ where: { id: userId } })
