@@ -75,7 +75,7 @@ export class UserController {
     try {
       const user = await this.userService.updateSingleUser(id, updateDto)
       if (!id) {
-        throw new NotFoundException(`User data with ${id} is not updated`)
+        throw new NotFoundException(`User data with ${id} is not updated.`)
       }
       return user
     } catch (error) {
