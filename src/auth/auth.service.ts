@@ -99,6 +99,7 @@ export class AuthService {
       httpOnly: true,
       secure: true,
       sameSite: "None",
+      path: "/",
       expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
     })
     const user = await this.prisma.user.findUnique({ where: { id: userId } })
