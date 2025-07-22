@@ -7,6 +7,7 @@ import { UserService } from "src/user/user.service"
 import { JwtService } from "@nestjs/jwt"
 import { ConfigService } from "@nestjs/config"
 import * as cuid from "cuid"
+import { Response } from "express"
 
 @Injectable()
 export class AuthService {
@@ -83,7 +84,7 @@ export class AuthService {
     userId: string,
     email: string,
     role: string,
-    res: any,
+    res: Response,
   ): Promise<{ success: boolean; data: any }> {
     const payload = {
       sub: userId,
@@ -104,9 +105,10 @@ export class AuthService {
     })
     const user = await this.prisma.user.findUnique({ where: { id: userId } })
     delete user.password
+
     return {
       success: true,
-      data: user,
+      data: { user, token },
     }
   }
 }
